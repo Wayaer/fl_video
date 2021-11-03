@@ -1,0 +1,23 @@
+name: fl_video
+description: The control panel for flutter videro_player
+version: 0.0.1
+homepage: https://github.com/Wayaer/fl_video
+
+environment:
+  sdk: '>=2.13.0 <3.0.0'
+  flutter: '>=2.0.0'
+
+dependencies:
+  cupertino_icons: ^1.0.3
+  flutter:
+    sdk: flutter
+  video_player: ^2.2.6
+  wakelock: ^0.5.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^1.0.4
+
+flutter:
+  uses-material-design: true

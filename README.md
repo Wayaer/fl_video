@@ -1,2 +1,2 @@
 # fl_video
-The control panel for flutter videro_player 
+The control panel for flutter video_player 
