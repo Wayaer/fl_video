@@ -5,7 +5,5 @@
 
 - example
 
-<img src="https://github.com/Wayaer/fl_video/blob/main/assets/cupertino.jpg" width="250px">
-<img src="https://github.com/Wayaer/fl_video/blob/main/assets/cupertino_full.jpg" width="250px">
-<img src="https://github.com/Wayaer/fl_video/blob/main/assets/material.jpg" width="250px">
+<img src="https://github.com/Wayaer/fl_video/blob/main/assets/cupertino.jpg" width="250px"><img src="https://github.com/Wayaer/fl_video/blob/main/assets/cupertino_full.jpg" width="250px"><img src="https://github.com/Wayaer/fl_video/blob/main/assets/material.jpg" width="250px">
 <img src="https://github.com/Wayaer/fl_video/blob/main/assets/material_full.jpg" width="300px">
