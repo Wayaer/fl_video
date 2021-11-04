@@ -5,7 +5,6 @@ import 'package:fl_video/fl_video.dart';
 import 'package:fl_video/src/fl_video_player.dart';
 import 'package:fl_video/src/model.dart';
 import 'package:fl_video/src/controls/player_with_controls.dart';
-import 'package:fl_video/src/controls/progress_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +47,8 @@ class CupertinoControls extends StatefulWidget {
     this.playbackSpeeds = const [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
     this.loading = const CircularProgressIndicator(color: Colors.white),
     this.errorBuilder,
+    this.onTap,
+    this.onDragProgress,
   })  : assert(playbackSpeeds.every((speed) => speed > 0),
             'The playbackSpeeds values must all be greater than 0'),
         super(key: key);
@@ -105,8 +106,13 @@ class CupertinoControls extends StatefulWidget {
   final List<double> playbackSpeeds;
 
   /// errorBuilder
-  final Widget Function(BuildContext context, String errorMessage)?
-      errorBuilder;
+  final ErrorBuilder? errorBuilder;
+
+  /// tap event
+  final FlVideoControlsTap? onTap;
+
+  /// Sliding progress bar
+  final FlVideoControlsProgressDrag? onDragProgress;
 
   @override
   _CupertinoControlsState createState() => _CupertinoControlsState();
@@ -144,7 +150,15 @@ class _CupertinoControlsState extends State<CupertinoControls>
               context,
               flVideoController
                   .videoPlayerController.value.errorDescription!) ??
-          Center(child: _Icon(widget.error, size: 42, color: widget.color));
+          DefaultError(
+              color: widget.color,
+              error: widget.error,
+              onTap: widget.onTap == null
+                  ? null
+                  : () {
+                      widget.onTap
+                          ?.call(FlVideoTapEvent.error, flVideoController);
+                    });
     }
 
     return MouseRegion(
@@ -259,7 +273,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
   Widget _buildFullscreen() => widget.enableFullscreen
       ? _GestureDetectorIcon(
-          onTap: _onExpandCollapse,
+          onTap: _onFullscreen,
           addBackdropFilter: true,
           backgroundColor: widget.backgroundColor,
           icon: flVideoController.isFullScreen
@@ -272,6 +286,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
       addBackdropFilter: true,
       backgroundColor: widget.backgroundColor,
       onTap: () {
+        widget.onTap!(FlVideoTapEvent.volume, flVideoController);
         _cancelAndRestartTimer();
         if (_latestValue.volume == 0) {
           controller.setVolume(_latestVolume ?? 0.5);
@@ -285,7 +300,13 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
   Widget _buildHitArea() {
     if (_latestValue.isBuffering) {
-      return Center(child: widget.loading);
+      var loading = widget.loading;
+      if (widget.onTap != null) {
+        loading.onTap(() {
+          widget.onTap!(FlVideoTapEvent.loading, flVideoController);
+        });
+      }
+      return Center(child: loading);
     }
     final bool isFinished = _latestValue.position >= _latestValue.duration;
     return _GestureDetectorIcon(
@@ -293,10 +314,8 @@ class _CupertinoControlsState extends State<CupertinoControls>
             ? _cancelAndRestartTimer
             : () {
                 _hideTimer?.cancel();
-
-                setState(() {
-                  notifier.hideStuff = false;
-                });
+                notifier.hideStuff = false;
+                setState(() {});
               },
         child: CenterPlayButton(
             backgroundColor: widget.backgroundColor,
@@ -304,13 +323,20 @@ class _CupertinoControlsState extends State<CupertinoControls>
             isFinished: isFinished,
             isPlaying: controller.value.isPlaying,
             show: !_latestValue.isPlaying && !_dragging,
-            onPressed: _playPause));
+            onPressed: () {
+              widget.onTap
+                  ?.call(FlVideoTapEvent.largePlayPause, flVideoController);
+              _playPause();
+            }));
   }
 
   _GestureDetectorIcon _buildPlayPause() => _GestureDetectorIcon(
-      onTap: _playPause,
+      onTap: () {
+        widget.onTap?.call(FlVideoTapEvent.playPause, flVideoController);
+        _playPause();
+      },
       child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+          padding: const EdgeInsets.all(4),
           child: AnimatedPlayPause(
               color: widget.color, playing: controller.value.isPlaying)));
 
@@ -319,10 +345,20 @@ class _CupertinoControlsState extends State<CupertinoControls>
     if (widget.positionBuilder != null) {
       return widget.positionBuilder!(position.formatDuration());
     }
-    return Padding(
+
+    Widget text = Padding(
         padding: const EdgeInsets.only(left: 6, top: 8, bottom: 8),
         child: Text(position.formatDuration(),
             style: TextStyle(color: widget.color, fontSize: 12.0)));
+
+    if (widget.onTap != null) {
+      return GestureDetector(
+          child: text,
+          onTap: () {
+            widget.onTap!(FlVideoTapEvent.position, flVideoController);
+          });
+    }
+    return text;
   }
 
   Widget _buildRemaining() {
@@ -330,14 +366,23 @@ class _CupertinoControlsState extends State<CupertinoControls>
     if (widget.remainingBuilder != null) {
       return widget.remainingBuilder!(remaining.formatDuration());
     }
-    return Padding(
+    Widget text = Padding(
         padding: const EdgeInsets.only(right: 6, top: 8, bottom: 8),
         child: Text('-${remaining.formatDuration()}',
             style: TextStyle(color: widget.color, fontSize: 12.0)));
+    if (widget.onTap != null) {
+      return GestureDetector(
+          child: text,
+          onTap: () {
+            widget.onTap!(FlVideoTapEvent.remaining, flVideoController);
+          });
+    }
+    return text;
   }
 
   _GestureDetectorIcon _buildSkipBack() => _GestureDetectorIcon(
       onTap: () {
+        widget.onTap?.call(FlVideoTapEvent.skipBack, flVideoController);
         _cancelAndRestartTimer();
         final beginning = const Duration().inMilliseconds;
         final skip = (_latestValue.position - const Duration(seconds: 15))
@@ -349,6 +394,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
   _GestureDetectorIcon _buildSkipForward() => _GestureDetectorIcon(
       onTap: () {
+        widget.onTap?.call(FlVideoTapEvent.skipForward, flVideoController);
         _cancelAndRestartTimer();
         final end = _latestValue.duration.inMilliseconds;
         final skip = (_latestValue.position + const Duration(seconds: 15))
@@ -361,6 +407,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
   Widget _buildSubtitleToggle() {
     return _GestureDetectorIcon(
         onTap: () {
+          widget.onTap?.call(FlVideoTapEvent.subtitle, flVideoController);
           _subtitleOn = !_subtitleOn;
           setState(() {});
         },
@@ -370,6 +417,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
   _GestureDetectorIcon _buildSpeed() => _GestureDetectorIcon(
       onTap: () async {
+        widget.onTap?.call(FlVideoTapEvent.speed, flVideoController);
         _hideTimer?.cancel();
         final chosenSpeed = await showCupertinoModalPopup<double>(
             context: context,
@@ -410,7 +458,8 @@ class _CupertinoControlsState extends State<CupertinoControls>
     }
   }
 
-  void _onExpandCollapse() {
+  void _onFullscreen() {
+    widget.onTap?.call(FlVideoTapEvent.fullscreen, flVideoController);
     notifier.hideStuff = true;
     flVideoController.toggleFullScreen();
     _expandCollapseTimer = Timer(const Duration(milliseconds: 300), () {
@@ -424,10 +473,14 @@ class _CupertinoControlsState extends State<CupertinoControls>
       child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: _CupertinoVideoProgressBar(controller, onDragStart: () {
+            widget.onDragProgress
+                ?.call(FlVideoDragProgressEvent.start, _latestValue.position);
             _dragging = true;
             setState(() {});
             _hideTimer?.cancel();
           }, onDragEnd: () {
+            widget.onDragProgress
+                ?.call(FlVideoDragProgressEvent.start, _latestValue.position);
             _dragging = false;
             setState(() {});
             _startHideTimer();

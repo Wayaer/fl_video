@@ -1,5 +1,6 @@
 import 'package:fl_video/fl_video.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_waya/flutter_waya.dart';
 
 class AppTheme {
   static final light = ThemeData(
@@ -48,9 +49,7 @@ class _HomePageState extends State<_HomePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      initializePlayer(_videoPlayerController1);
-    });
+    initializePlayer(_videoPlayerController1);
   }
 
   @override
@@ -59,10 +58,7 @@ class _HomePageState extends State<_HomePage> {
     super.dispose();
   }
 
-  Future<void> initializePlayer(
-      VideoPlayerController videoPlayerController) async {
-    await _controller?.pause();
-    await _controller?.dispose(false);
+  void initializePlayer(VideoPlayerController videoPlayerController) {
     _controller = FlVideoPlayerController(
         videoPlayerController: videoPlayerController,
         autoPlay: true,
@@ -76,12 +72,13 @@ class _HomePageState extends State<_HomePage> {
                 enableVolume: true,
                 enableSubtitle: true,
                 enablePosition: true,
-                positionBuilder: (String position, String all) {
-                  return Padding(
-                      padding: const EdgeInsets.fromLTRB(6, 6, 0, 6),
-                      child: Text('$position / $all',
-                          style: const TextStyle(
-                              fontSize: 16, color: Colors.red)));
+                onTap: (FlVideoTapEvent event,
+                    FlVideoPlayerController controller) {
+                  log(event);
+                },
+                onDragProgress:
+                    (FlVideoDragProgressEvent event, Duration duration) {
+                  log('$event===$duration');
                 })
             : CupertinoControls(
                 hideDuration: const Duration(minutes: 30),
@@ -91,20 +88,29 @@ class _HomePageState extends State<_HomePage> {
                 enableFullscreen: true,
                 enableVolume: true,
                 enablePlay: true,
-                remainingBuilder: (String position) {
-                  return Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 6, 6, 6),
-                      child: Text(position,
-                          style: const TextStyle(
-                              fontSize: 16, color: Colors.red)));
+                onTap: (FlVideoTapEvent event,
+                    FlVideoPlayerController controller) {
+                  log(event);
                 },
-                positionBuilder: (String position) {
-                  return Padding(
-                      padding: const EdgeInsets.fromLTRB(6, 6, 0, 6),
-                      child: Text(position,
-                          style: const TextStyle(
-                              fontSize: 16, color: Colors.lightBlue)));
-                }),
+                onDragProgress:
+                    (FlVideoDragProgressEvent event, Duration duration) {
+                  log('$event===$duration');
+                },
+                // remainingBuilder: (String position) {
+                //   return Padding(
+                //       padding: const EdgeInsets.fromLTRB(0, 6, 6, 6),
+                //       child: Text(position,
+                //           style: const TextStyle(
+                //               fontSize: 16, color: Colors.red)));
+                // },
+                // positionBuilder: (String position) {
+                //   return Padding(
+                //       padding: const EdgeInsets.fromLTRB(6, 6, 0, 6),
+                //       child: Text(position,
+                //           style: const TextStyle(
+                //               fontSize: 16, color: Colors.lightBlue)));
+                // },
+              ),
         subtitle: Subtitles([
           Subtitle(
               index: 0,
@@ -117,7 +123,6 @@ class _HomePageState extends State<_HomePage> {
               end: const Duration(seconds: 20),
               text: 'Whats up? :)'),
         ]));
-    setState(() {});
   }
 
   @override
@@ -127,30 +132,33 @@ class _HomePageState extends State<_HomePage> {
         body: SafeArea(
           bottom: true,
           child: Column(children: <Widget>[
-            Expanded(
-                child: _controller == null
-                    ? const SizedBox()
-                    : FlVideoPlayer(controller: _controller!)),
+            Expanded(child: FlVideoPlayer(controller: _controller!)),
+            const SizedBox(height: 40),
             Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   ElevatedText(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_controller!.videoPlayerController !=
                             _videoPlayerController1) {
+                          await _controller!.dispose();
                           initializePlayer(_videoPlayerController1);
+                          setState(() {});
                         }
                       },
                       text: "Landscape Video"),
                   ElevatedText(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_controller!.videoPlayerController !=
                             _videoPlayerController2) {
+                          await _controller!.dispose();
                           initializePlayer(_videoPlayerController2);
+                          setState(() {});
                         }
                       },
                       text: 'Portrait Video')
                 ]),
+            const SizedBox(height: 40),
           ]),
         ));
   }

@@ -1,3 +1,60 @@
+import 'package:fl_video/fl_video.dart';
+
+typedef FlVideoControlsTap = void Function(
+    FlVideoTapEvent event, FlVideoPlayerController controller);
+
+typedef FlVideoControlsProgressDrag = void Function(
+    FlVideoDragProgressEvent event, Duration duration);
+
+enum FlVideoDragProgressEvent {
+  /// drag start
+  start,
+
+  /// drag end
+  end,
+}
+
+enum FlVideoTapEvent {
+  /// center playPause Button
+  largePlayPause,
+
+  /// playPause Button
+  playPause,
+
+  /// volume Button
+  volume,
+
+  /// position text Button
+  position,
+
+  /// duration text Button  CupertinoControls only
+  remaining,
+
+  /// playbackSpeed Button
+  speed,
+
+  /// subtitle Button
+  subtitle,
+
+  /// fullscreen Button
+  fullscreen,
+
+  /// progress Button
+  progress,
+
+  /// error Button
+  error,
+
+  /// loading Button
+  loading,
+
+  /// skip back  CupertinoControls only
+  skipBack,
+
+  /// skip back  CupertinoControls only
+  skipForward,
+}
+
 class Subtitles {
   Subtitles(this.subtitle);
 

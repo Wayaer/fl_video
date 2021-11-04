@@ -4,43 +4,195 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-class PlayerWithControls extends StatelessWidget {
-  const PlayerWithControls(this.controller, {Key? key}) : super(key: key);
-  final FlVideoPlayerController controller;
+class PlayerNotifier extends ChangeNotifier {
+  PlayerNotifier._(bool hideStuff) : _hideStuff = hideStuff;
+
+  bool _hideStuff;
+
+  bool get hideStuff => _hideStuff;
+
+  set hideStuff(bool value) {
+    if (_hideStuff != value) {
+      _hideStuff = value;
+      notifyListeners();
+    }
+  }
+
+  static PlayerNotifier get init => PlayerNotifier._(true);
+}
+
+class VideoProgressBar extends StatefulWidget {
+  const VideoProgressBar(
+    this.controller, {
+    this.colors = const FlVideoPlayerProgressColors(),
+    this.onDragEnd,
+    this.onDragStart,
+    this.onDragUpdate,
+    Key? key,
+    required this.barHeight,
+    required this.handleHeight,
+    required this.drawShadow,
+  }) : super(key: key);
+
+  final VideoPlayerController controller;
+  final FlVideoPlayerProgressColors colors;
+  final Function()? onDragStart;
+  final Function()? onDragEnd;
+  final Function()? onDragUpdate;
+
+  final double barHeight;
+  final double handleHeight;
+  final bool drawShadow;
+
+  @override
+  _VideoProgressBarState createState() => _VideoProgressBarState();
+}
+
+class _VideoProgressBarState extends State<VideoProgressBar> {
+  bool _controllerWasPlaying = false;
+
+  VideoPlayerController get controller => widget.controller;
+
+  void _seekToRelativePosition(Offset globalPosition) {
+    final box = context.findRenderObject()! as RenderBox;
+    final Offset tapPos = box.globalToLocal(globalPosition);
+    final double relative = tapPos.dx / box.size.width;
+    final Duration position = controller.value.duration * relative;
+    controller.seekTo(position);
+  }
 
   @override
   Widget build(BuildContext context) {
-    print('======PlayerWithControls===build');
-    double _calculateAspectRatio() {
-      final size = MediaQuery.of(context).size;
-      final width = size.width;
-      final height = size.height;
-      return width > height ? width / height : height / width;
-    }
-
-    return SizedBox.expand(
-        child: AspectRatio(
-            aspectRatio: _calculateAspectRatio(),
-            child: ColoredBox(
-                color: Colors.black,
-                child: Stack(children: <Widget>[
-                  controller.placeholder ?? const SizedBox(),
-                  Center(
-                      child: AspectRatio(
-                    aspectRatio: controller.aspectRatio ??
-                        controller.videoPlayerController.value.aspectRatio,
-                    child: VideoPlayer(controller.videoPlayerController),
-                  )),
-                  if (controller.overlay != null) controller.overlay!,
-                  if (controller.controls != null)
-                    controller.isFullScreen
-                        ? SafeArea(bottom: false, child: controller.controls!)
-                        : controller.controls!
-                ]))));
+    return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onHorizontalDragStart: (DragStartDetails details) {
+          if (!controller.value.isInitialized) {
+            return;
+          }
+          _controllerWasPlaying = controller.value.isPlaying;
+          if (_controllerWasPlaying) {
+            controller.pause();
+          }
+          widget.onDragStart?.call();
+        },
+        onHorizontalDragUpdate: (DragUpdateDetails details) {
+          if (!controller.value.isInitialized) {
+            return;
+          }
+          _seekToRelativePosition(details.globalPosition);
+          widget.onDragUpdate?.call();
+        },
+        onHorizontalDragEnd: (DragEndDetails details) {
+          if (_controllerWasPlaying) {
+            controller.play();
+          }
+          widget.onDragEnd?.call();
+        },
+        onTapDown: (TapDownDetails details) {
+          if (!controller.value.isInitialized) {
+            return;
+          }
+          _seekToRelativePosition(details.globalPosition);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: CustomPaint(
+              painter: _ProgressBarPainter(
+                  value: controller.value,
+                  colors: widget.colors,
+                  barHeight: widget.barHeight,
+                  handleHeight: widget.handleHeight,
+                  drawShadow: widget.drawShadow)),
+        ));
   }
 }
 
-extension FormatDuration on Duration {
+class _ProgressBarPainter extends CustomPainter {
+  _ProgressBarPainter(
+      {required this.value,
+      required this.colors,
+      required this.barHeight,
+      required this.handleHeight,
+      required this.drawShadow});
+
+  VideoPlayerValue value;
+  FlVideoPlayerProgressColors colors;
+
+  final double barHeight;
+  final double handleHeight;
+  final bool drawShadow;
+
+  @override
+  bool shouldRepaint(CustomPainter painter) => true;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final baseOffset = size.height / 2 - barHeight / 2;
+    Paint point = Paint();
+    point.color = colors.background;
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(
+            Rect.fromPoints(Offset(0.0, baseOffset),
+                Offset(size.width, baseOffset + barHeight)),
+            const Radius.circular(4.0)),
+        point);
+    if (!value.isInitialized) return;
+    final double playedPartPercent =
+        value.position.inMilliseconds / value.duration.inMilliseconds;
+    final double playedPart =
+        playedPartPercent > 1 ? size.width : playedPartPercent * size.width;
+    for (final DurationRange range in value.buffered) {
+      final double start = range.startFraction(value.duration) * size.width;
+      final double end = range.endFraction(value.duration) * size.width;
+      point.color = colors.buffered;
+      canvas.drawRRect(
+          RRect.fromRectAndRadius(
+              Rect.fromPoints(Offset(start, baseOffset),
+                  Offset(end, baseOffset + barHeight)),
+              const Radius.circular(4.0)),
+          point);
+    }
+    point.color = colors.played;
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(
+            Rect.fromPoints(Offset(0.0, baseOffset),
+                Offset(playedPart, baseOffset + barHeight)),
+            const Radius.circular(4.0)),
+        point);
+
+    if (drawShadow) {
+      final shadowPath = Path()
+        ..addOval(Rect.fromCircle(
+            center: Offset(playedPart, baseOffset + barHeight / 2),
+            radius: handleHeight));
+      canvas.drawShadow(shadowPath, Colors.black, 0.2, false);
+    }
+    point.color = colors.handle;
+    canvas.drawCircle(
+        Offset(playedPart, baseOffset + barHeight / 2), handleHeight, point);
+  }
+}
+
+class FlVideoPlayerProgressColors {
+  const FlVideoPlayerProgressColors({
+    this.played = const Color(0xb2ff0000),
+    this.buffered = const Color(0x331e1ec8),
+    this.handle = const Color(0xffc8c8c8),
+    this.background = const Color(0x7fc8c8c8),
+  });
+
+  final Color played;
+  final Color buffered;
+  final Color handle;
+  final Color background;
+}
+
+extension ExtensionWidget on Widget {
+  GestureDetector onTap(GestureTapCallback? onTap, {Key? key}) =>
+      GestureDetector(onTap: onTap, key: key);
+}
+
+extension ExtensionDuration on Duration {
   String formatDuration() {
     final ms = inMilliseconds;
 
@@ -161,4 +313,28 @@ class _AnimatedPlayPauseState extends State<AnimatedPlayPause>
       size: widget.size,
       icon: AnimatedIcons.play_pause,
       progress: animationController);
+}
+
+class DefaultIcon extends Icon {
+  const DefaultIcon(IconData icon, {double size = 22, Color? color, Key? key})
+      : super(icon, color: color, size: size, key: key);
+}
+
+class DefaultError extends StatelessWidget {
+  const DefaultError(
+      {Key? key, required this.color, required this.error, this.onTap})
+      : super(key: key);
+
+  final Color color;
+  final IconData error;
+  final GestureTapCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget icon = DefaultIcon(error, size: 42, color: color);
+    if (onTap != null) {
+      icon = icon.onTap(onTap);
+    }
+    return Center(child: icon);
+  }
 }

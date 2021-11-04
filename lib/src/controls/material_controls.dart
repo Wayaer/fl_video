@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:fl_video/fl_video.dart';
 import 'package:fl_video/src/fl_video_player.dart';
 import 'package:fl_video/src/controls/player_with_controls.dart';
-import 'package:fl_video/src/controls/progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 typedef PositionAndAllBuilder = Widget Function(String position, String all);
+typedef ErrorBuilder = Widget Function(
+    BuildContext context, String errorMessage);
 
 class MaterialControls extends StatefulWidget {
   MaterialControls({
@@ -39,6 +40,8 @@ class MaterialControls extends StatefulWidget {
     this.loading = const CircularProgressIndicator(color: Colors.white),
     this.positionBuilder,
     this.errorBuilder,
+    this.onTap,
+    this.onDragProgress,
   })  : assert(playbackSpeeds.every((speed) => speed > 0),
             'The playbackSpeeds values must all be greater than 0'),
         super(key: key);
@@ -94,8 +97,13 @@ class MaterialControls extends StatefulWidget {
   final List<double> playbackSpeeds;
 
   /// errorBuilder
-  final Widget Function(BuildContext context, String errorMessage)?
-      errorBuilder;
+  final ErrorBuilder? errorBuilder;
+
+  /// tap event
+  final FlVideoControlsTap? onTap;
+
+  /// Sliding progress bar
+  final FlVideoControlsProgressDrag? onDragProgress;
 
   @override
   _MaterialControlsState createState() => _MaterialControlsState();
@@ -134,7 +142,15 @@ class _MaterialControlsState extends State<MaterialControls>
               context,
               flVideoController
                   .videoPlayerController.value.errorDescription!) ??
-          Center(child: _Icon(widget.error, size: 42, color: widget.color));
+          DefaultError(
+              color: widget.color,
+              error: widget.error,
+              onTap: widget.onTap == null
+                  ? null
+                  : () {
+                      widget.onTap
+                          ?.call(FlVideoTapEvent.error, flVideoController);
+                    });
     }
 
     return MouseRegion(
@@ -179,7 +195,6 @@ class _MaterialControlsState extends State<MaterialControls>
     final _oldController = _flVideoController;
     _flVideoController = FlVideoPlayerController.of(context);
     controller = flVideoController.videoPlayerController;
-
     if (_oldController != flVideoController) {
       _dispose();
       _initialize();
@@ -212,10 +227,14 @@ class _MaterialControlsState extends State<MaterialControls>
             SizedBox(
                 width: double.infinity,
                 child: _MaterialVideoProgressBar(controller, onDragStart: () {
+                  widget.onDragProgress?.call(
+                      FlVideoDragProgressEvent.start, _latestValue.position);
                   _dragging = true;
                   setState(() {});
                   _hideTimer?.cancel();
                 }, onDragEnd: () {
+                  widget.onDragProgress?.call(
+                      FlVideoDragProgressEvent.start, _latestValue.position);
                   _dragging = false;
                   setState(() {});
                   _startHideTimer();
@@ -226,14 +245,15 @@ class _MaterialControlsState extends State<MaterialControls>
             if (widget.enablePosition) _buildPosition(),
             const Spacer(),
             if (widget.enableSpeed) _buildPlaybackSpeed(),
-            if (widget.enableSubtitle) _buildSubtitleIcon(),
-            if (widget.enableFullscreen) _buildExpandButton(),
+            if (widget.enableSubtitle) _buildSubtitle(),
+            if (widget.enableFullscreen) _buildFullscreenButton(),
           ]),
         ]));
   }
 
-  _GestureDetectorIcon _buildSubtitleIcon() => _GestureDetectorIcon(
+  _GestureDetectorIcon _buildSubtitle() => _GestureDetectorIcon(
       onTap: () {
+        widget.onTap?.call(FlVideoTapEvent.subtitle, flVideoController);
         _subtitleOn = !_subtitleOn;
         setState(() {});
       },
@@ -248,6 +268,7 @@ class _MaterialControlsState extends State<MaterialControls>
       color: widget.color,
       isFirst: !widget.enableFullscreen && !widget.enableSubtitle,
       onTap: () async {
+        widget.onTap?.call(FlVideoTapEvent.speed, flVideoController);
         _hideTimer?.cancel();
         final chosenSpeed = await showModalBottomSheet<double>(
             context: context,
@@ -265,8 +286,8 @@ class _MaterialControlsState extends State<MaterialControls>
         }
       });
 
-  _GestureDetectorIcon _buildExpandButton() => _GestureDetectorIcon(
-      onTap: _onExpandCollapse,
+  _GestureDetectorIcon _buildFullscreenButton() => _GestureDetectorIcon(
+      onTap: _onFullscreen,
       isStartLeft: false,
       isFirst: true,
       color: widget.color,
@@ -276,7 +297,13 @@ class _MaterialControlsState extends State<MaterialControls>
 
   Widget _buildHitArea() {
     if (_latestValue.isBuffering) {
-      return Center(child: widget.loading);
+      var loading = widget.loading;
+      if (widget.onTap != null) {
+        loading.onTap(() {
+          widget.onTap!(FlVideoTapEvent.loading, flVideoController);
+        });
+      }
+      return Center(child: loading);
     }
     final bool isFinished = _latestValue.position >= _latestValue.duration;
     return _GestureDetectorIcon(
@@ -300,11 +327,16 @@ class _MaterialControlsState extends State<MaterialControls>
             isFinished: isFinished,
             isPlaying: controller.value.isPlaying,
             show: !_latestValue.isPlaying && !_dragging,
-            onPressed: _playPause));
+            onPressed: () {
+              widget.onTap
+                  ?.call(FlVideoTapEvent.largePlayPause, flVideoController);
+              _playPause();
+            }));
   }
 
   _GestureDetectorIcon _buildVolume() => _GestureDetectorIcon(
       onTap: () {
+        widget.onTap?.call(FlVideoTapEvent.volume, flVideoController);
         _cancelAndRestartTimer();
         if (_latestValue.volume == 0) {
           controller.setVolume(_latestVolume ?? 0.5);
@@ -318,7 +350,10 @@ class _MaterialControlsState extends State<MaterialControls>
       icon: _latestValue.volume > 0 ? widget.volumeON : widget.volumeOFF);
 
   _GestureDetectorIcon _buildPlayPause() => _GestureDetectorIcon(
-      onTap: _playPause,
+      onTap: () {
+        widget.onTap?.call(FlVideoTapEvent.playPause, flVideoController);
+        _playPause();
+      },
       child: AnimatedPlayPause(
           playing: controller.value.isPlaying, color: widget.color));
 
@@ -340,6 +375,13 @@ class _MaterialControlsState extends State<MaterialControls>
       text = Padding(
           padding: EdgeInsets.only(left: widget.enablePlay ? 6 : 0),
           child: text);
+    }
+    if (widget.onTap != null) {
+      return GestureDetector(
+          child: text,
+          onTap: () {
+            widget.onTap!(FlVideoTapEvent.position, flVideoController);
+          });
     }
     return text;
   }
@@ -368,7 +410,8 @@ class _MaterialControlsState extends State<MaterialControls>
     }
   }
 
-  void _onExpandCollapse() {
+  void _onFullscreen() {
+    widget.onTap?.call(FlVideoTapEvent.fullscreen, flVideoController);
     setState(() {
       notifier.hideStuff = true;
       flVideoController.toggleFullScreen();
@@ -382,7 +425,6 @@ class _MaterialControlsState extends State<MaterialControls>
 
   void _playPause() {
     final isFinished = _latestValue.position >= _latestValue.duration;
-
     setState(() {
       if (controller.value.isPlaying) {
         notifier.hideStuff = false;
@@ -415,8 +457,6 @@ class _MaterialControlsState extends State<MaterialControls>
   void _updateState() {
     if (!mounted) return;
     _latestValue = controller.value;
-    // _position.value = controller.value.position;
-    // _subtitlesPosition = controller.value.position;
     setState(() {});
   }
 }
@@ -454,13 +494,8 @@ class _GestureDetectorIcon extends StatelessWidget {
                 padding: EdgeInsets.only(
                     left: left, right: right, bottom: 4, top: 4),
                 child: child ??
-                    _Icon(icon ?? Icons.add_box_outlined, color: color)));
+                    DefaultIcon(icon ?? Icons.add_box_outlined, color: color)));
   }
-}
-
-class _Icon extends Icon {
-  const _Icon(IconData? icon, {double size = 22, Color? color})
-      : super(icon, color: color, size: size);
 }
 
 class _MaterialVideoProgressBar extends VideoProgressBar {

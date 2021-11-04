@@ -33,6 +33,8 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
   bool _isFullScreen = false;
   late PlayerNotifier notifier;
 
+  final ValueNotifier<double> _aspectRatio = ValueNotifier<double>(0);
+
   FlVideoPlayerController get controller => widget.controller;
 
   @override
@@ -44,6 +46,7 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
 
   @override
   void dispose() {
+    _aspectRatio.dispose();
     controller.removeListener(listener);
     super.dispose();
   }
@@ -64,14 +67,50 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
       Navigator.of(context, rootNavigator: true).pop();
       _isFullScreen = false;
     }
+    if (controller.value.aspectRatio != _aspectRatio.value) {
+      _aspectRatio.value = controller.value.aspectRatio;
+    }
   }
 
   @override
   Widget build(BuildContext context) => controllerProvider;
 
-  _FlVideoPlayerControllerProvider get controllerProvider =>
-      _FlVideoPlayerControllerProvider(
-          controller: controller, child: PlayerWithControls(controller));
+  _FlVideoPlayerControllerProvider get controllerProvider {
+    double _calculateAspectRatio() {
+      final size = MediaQuery.of(context).size;
+      final width = size.width;
+      final height = size.height;
+      return width > height ? width / height : height / width;
+    }
+
+    return _FlVideoPlayerControllerProvider(
+        controller: controller,
+        child: SizedBox.expand(
+          child: AspectRatio(
+              aspectRatio: _calculateAspectRatio(),
+              child: ColoredBox(
+                  color: Colors.black,
+                  child: Stack(children: <Widget>[
+                    ValueListenableBuilder(
+                        valueListenable: _aspectRatio,
+                        builder: (_, double aspectRatio, __) => aspectRatio != 0
+                            ? Center(
+                                child: AspectRatio(
+                                    aspectRatio: controller
+                                        .videoPlayerController
+                                        .value
+                                        .aspectRatio,
+                                    child: VideoPlayer(
+                                        controller.videoPlayerController)))
+                            : controller.placeholder ?? const SizedBox()),
+                    if (controller.overlay != null) controller.overlay!,
+                    if (controller.controls != null)
+                      controller.isFullScreen
+                          ? SafeArea(bottom: false, child: controller.controls!)
+                          : controller.controls!
+                  ]))),
+        ));
+  }
 
   Future<dynamic> _pushFullScreenWidget(BuildContext context) async {
     final TransitionRoute<void> route = PageRouteBuilder<void>(pageBuilder:
@@ -166,7 +205,7 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
 class FlVideoPlayerController extends ChangeNotifier {
   FlVideoPlayerController({
     required this.videoPlayerController,
-    this.aspectRatio,
+    // this.aspectRatio,
     this.autoInitialize = false,
     this.autoPlay = false,
     this.startAt,
@@ -221,7 +260,7 @@ class FlVideoPlayerController extends ChangeNotifier {
   /// video!
   ///
   /// Will fallback to fitting within the space allowed.
-  final double? aspectRatio;
+  // final double? aspectRatio;
 
   /// The placeholder is displayed underneath the Video before it is initialized
   /// or played.
@@ -275,6 +314,12 @@ class FlVideoPlayerController extends ChangeNotifier {
 
   bool get hasError => videoPlayerController.value.hasError;
 
+  double get volume => videoPlayerController.value.volume;
+
+  List<DurationRange> get buffered => videoPlayerController.value.buffered;
+
+  double get playbackSpeed => videoPlayerController.value.playbackSpeed;
+
   VideoPlayerValue get value => videoPlayerController.value;
 
   String? get errorDescription => videoPlayerController.value.errorDescription;
@@ -302,6 +347,7 @@ class FlVideoPlayerController extends ChangeNotifier {
     if (fullScreenByDefault) {
       videoPlayerController.addListener(_fullScreenListener);
     }
+    notifyListeners();
   }
 
   void _fullScreenListener() {
