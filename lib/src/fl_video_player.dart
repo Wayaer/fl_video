@@ -14,6 +14,8 @@ typedef FlVideoPlayerRoutePageBuilder = Widget Function(
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     _FlVideoPlayerControllerProvider controllerProvider);
+typedef SubtitlesBuilder = Widget Function(
+    BuildContext context, String subtitle);
 
 /// A Video Player with Material and Cupertino skins.
 ///
@@ -53,9 +55,7 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
 
   @override
   void didUpdateWidget(FlVideoPlayer oldWidget) {
-    if (oldWidget.controller != controller) {
-      controller.addListener(listener);
-    }
+    if (oldWidget.controller != controller) controller.addListener(listener);
     super.didUpdateWidget(oldWidget);
   }
 
@@ -64,7 +64,7 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
       _isFullScreen = true;
       await _pushFullScreenWidget(context);
     } else if (_isFullScreen) {
-      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context, rootNavigator: true).maybePop();
       _isFullScreen = false;
     }
     if (controller.value.aspectRatio != _aspectRatio.value) {
@@ -203,33 +203,31 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
 /// player, please use the standard information provided by the
 /// `VideoPlayerController`.
 class FlVideoPlayerController extends ChangeNotifier {
-  FlVideoPlayerController({
-    required this.videoPlayerController,
-    // this.aspectRatio,
-    this.autoInitialize = false,
-    this.autoPlay = false,
-    this.startAt,
-    this.looping = false,
-    this.fullScreenByDefault = false,
-    this.placeholder,
-    this.overlay,
-    this.showControlsOnInitialize = true,
-    this.subtitle,
-    this.subtitleBuilder,
-    this.controls,
-    this.allowedScreenSleep = true,
-    this.isLive = false,
-    this.systemOverlaysOnEnterFullScreen,
-    this.deviceOrientationsOnEnterFullScreen,
-    this.systemOverlaysAfterFullScreen = SystemUiOverlay.values,
-    this.deviceOrientationsAfterFullScreen = DeviceOrientation.values,
-    this.routePageBuilder,
-  }) {
+  FlVideoPlayerController(
+      {required this.videoPlayerController,
+      this.autoInitialize = false,
+      this.autoPlay = false,
+      this.startAt,
+      this.looping = false,
+      this.fullScreenByDefault = false,
+      this.placeholder,
+      this.overlay,
+      this.showControlsOnInitialize = true,
+      this.subtitle,
+      this.subtitleBuilder,
+      this.controls,
+      this.allowedScreenSleep = true,
+      this.isLive = false,
+      this.systemOverlaysOnEnterFullScreen,
+      this.deviceOrientationsOnEnterFullScreen,
+      this.systemOverlaysAfterFullScreen = SystemUiOverlay.values,
+      this.deviceOrientationsAfterFullScreen = DeviceOrientation.values,
+      this.routePageBuilder}) {
     _initialize();
   }
 
   /// Define here your own Widget on how your n'th subtitle will look like
-  final Widget Function(BuildContext context, String subtitle)? subtitleBuilder;
+  final SubtitlesBuilder? subtitleBuilder;
 
   /// Add a List of Subtitles here in `Subtitles.subtitle`
   Subtitles? subtitle;
@@ -255,12 +253,6 @@ class FlVideoPlayerController extends ChangeNotifier {
   /// Defines customised controls. Check [MaterialControls] or
   /// [CupertinoControls] for reference.
   final Widget? controls;
-
-  /// The Aspect Ratio of the Video. Important to get the correct size of the
-  /// video!
-  ///
-  /// Will fallback to fitting within the space allowed.
-  // final double? aspectRatio;
 
   /// The placeholder is displayed underneath the Video before it is initialized
   /// or played.

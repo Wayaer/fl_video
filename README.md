@@ -1,2 +1,3 @@
 # fl_video
-The control panel for flutter video_player 
+
+For the video_Player control panel, add cupertino and Material styles

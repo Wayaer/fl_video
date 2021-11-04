@@ -63,6 +63,12 @@ class _HomePageState extends State<_HomePage> {
         videoPlayerController: videoPlayerController,
         autoPlay: true,
         looping: true,
+        overlay: const Center(
+            child: Text('overlay',
+                style: TextStyle(color: Colors.lightBlue, fontSize: 20))),
+        placeholder: const Center(
+            child: Text('placeholder',
+                style: TextStyle(color: Colors.red, fontSize: 20))),
         controls: videoPlayerController == _videoPlayerController1
             ? MaterialControls(
                 hideDuration: const Duration(minutes: 30),
@@ -96,39 +102,39 @@ class _HomePageState extends State<_HomePage> {
                     (FlVideoDragProgressEvent event, Duration duration) {
                   log('$event===$duration');
                 },
-                // remainingBuilder: (String position) {
-                //   return Padding(
-                //       padding: const EdgeInsets.fromLTRB(0, 6, 6, 6),
-                //       child: Text(position,
-                //           style: const TextStyle(
-                //               fontSize: 16, color: Colors.red)));
-                // },
-                // positionBuilder: (String position) {
-                //   return Padding(
-                //       padding: const EdgeInsets.fromLTRB(6, 6, 0, 6),
-                //       child: Text(position,
-                //           style: const TextStyle(
-                //               fontSize: 16, color: Colors.lightBlue)));
-                // },
+                remainingBuilder: (String position) {
+                  return Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 6, 6, 6),
+                      child: Text(position,
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.red)));
+                },
+                positionBuilder: (String position) {
+                  return Padding(
+                      padding: const EdgeInsets.fromLTRB(6, 6, 0, 6),
+                      child: Text(position,
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.lightBlue)));
+                },
               ),
         subtitle: Subtitles([
           Subtitle(
               index: 0,
               start: Duration.zero,
               end: const Duration(seconds: 10),
-              text: 'Hello from subtitles'),
+              text: 'No.1 subtitle'),
           Subtitle(
               index: 0,
               start: const Duration(seconds: 10),
               end: const Duration(seconds: 20),
-              text: 'Whats up? :)'),
+              text: 'No.2 subtitle)'),
         ]));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Example')),
+        appBar: AppBar(title: const Text('Fl Video Player')),
         body: SafeArea(
           bottom: true,
           child: Column(children: <Widget>[
@@ -146,7 +152,7 @@ class _HomePageState extends State<_HomePage> {
                           setState(() {});
                         }
                       },
-                      text: "Landscape Video"),
+                      text: "MaterialControls"),
                   ElevatedText(
                       onPressed: () async {
                         if (_controller!.videoPlayerController !=
@@ -156,7 +162,7 @@ class _HomePageState extends State<_HomePage> {
                           setState(() {});
                         }
                       },
-                      text: 'Portrait Video')
+                      text: 'CupertinoControls')
                 ]),
             const SizedBox(height: 40),
           ]),
