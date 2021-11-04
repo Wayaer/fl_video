@@ -1,4 +1,5 @@
 import 'package:fl_video/fl_video.dart';
+import 'package:flutter/material.dart';
 
 typedef FlVideoControlsTap = void Function(
     FlVideoTapEvent event, FlVideoPlayerController controller);
@@ -53,6 +54,20 @@ enum FlVideoTapEvent {
 
   /// skip back  CupertinoControls only
   skipForward,
+}
+
+class FlVideoPlayerProgressColors {
+  const FlVideoPlayerProgressColors({
+    this.played = const Color(0xb2ff0000),
+    this.buffered = const Color(0x331e1ec8),
+    this.handle = const Color(0xffc8c8c8),
+    this.background = const Color(0x7fc8c8c8),
+  });
+
+  final Color played;
+  final Color buffered;
+  final Color handle;
+  final Color background;
 }
 
 class Subtitles {
