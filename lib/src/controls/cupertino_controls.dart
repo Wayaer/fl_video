@@ -106,7 +106,7 @@ class CupertinoControls extends StatefulWidget {
   final List<double> playbackSpeeds;
 
   /// errorBuilder
-  final ErrorBuilder? errorBuilder;
+  final FlVideoControlsErrorBuilder? errorBuilder;
 
   /// tap event
   final FlVideoControlsTap? onTap;

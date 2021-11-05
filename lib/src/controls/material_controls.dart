@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 typedef PositionAndAllBuilder = Widget Function(String position, String all);
-typedef ErrorBuilder = Widget Function(
+typedef FlVideoControlsErrorBuilder = Widget Function(
     BuildContext context, String errorMessage);
 
 class MaterialControls extends StatefulWidget {
@@ -97,7 +97,7 @@ class MaterialControls extends StatefulWidget {
   final List<double> playbackSpeeds;
 
   /// errorBuilder
-  final ErrorBuilder? errorBuilder;
+  final FlVideoControlsErrorBuilder? errorBuilder;
 
   /// tap event
   final FlVideoControlsTap? onTap;
