@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:fl_video/fl_video.dart';
-import 'package:fl_video/src/fl_video_player.dart';
 import 'package:fl_video/src/controls/player_with_controls.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
 typedef PositionAndAllBuilder = Widget Function(String position, String all);
 typedef FlVideoControlsErrorBuilder = Widget Function(

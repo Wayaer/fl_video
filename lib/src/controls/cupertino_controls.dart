@@ -2,13 +2,9 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:fl_video/fl_video.dart';
-import 'package:fl_video/src/fl_video_player.dart';
-import 'package:fl_video/src/model.dart';
 import 'package:fl_video/src/controls/player_with_controls.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
 typedef PositionBuilder = Widget Function(String postion);
 typedef RemainingBuilder = Widget Function(String remaining);

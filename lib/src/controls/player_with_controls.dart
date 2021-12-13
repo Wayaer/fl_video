@@ -1,8 +1,5 @@
 import 'package:fl_video/fl_video.dart';
-import 'package:fl_video/src/fl_video_player.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
 class PlayerNotifier extends ChangeNotifier {
   PlayerNotifier._(bool hideStuff) : _hideStuff = hideStuff;
@@ -172,7 +169,6 @@ class _ProgressBarPainter extends CustomPainter {
         Offset(playedPart, baseOffset + barHeight / 2), handleHeight, point);
   }
 }
-
 
 extension ExtensionWidget on Widget {
   GestureDetector onTap(GestureTapCallback? onTap, {Key? key}) =>
