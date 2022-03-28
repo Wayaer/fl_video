@@ -5,10 +5,10 @@
 
 - example
 
-<img src="https://github.com/Wayaer/fl_video/blob/main/assets/cupertino.jpg" width="50%"><img src="https://github.com/Wayaer/fl_video/blob/main/assets/material.jpg" width="50%">
+<img src="https://github.com/Wayaer/fl_video/raw/main/assets/cupertino.jpg" width="50%"><img src="https://github.com/Wayaer/fl_video/raw/main/assets/material.jpg" width="50%">
 
 - FullScreen
-<img src="https://github.com/Wayaer/fl_video/blob/main/assets/material_full.jpg" width="100%">
+<img src="https://github.com/Wayaer/fl_video/raw/main/assets/material_full.jpg" width="100%">
 
-<img src="https://github.com/Wayaer/fl_video/blob/main/assets/cupertino_full.jpg" width="50%">
+<img src="https://github.com/Wayaer/fl_video/raw/main/assets/cupertino_full.jpg" width="50%">
 

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:fl_video/fl_video.dart';
 import 'package:fl_video/src/controls/player_with_controls.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
@@ -80,7 +79,6 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
       final height = size.height;
       return width > height ? width / height : height / width;
     }
-
     return _FlVideoPlayerControllerProvider(
         controller: controller,
         child: SizedBox.expand(

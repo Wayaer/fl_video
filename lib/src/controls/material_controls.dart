@@ -217,37 +217,35 @@ class _MaterialControlsState extends State<MaterialControls>
             textAlign: TextAlign.center));
   }
 
-  SafeArea _buildBottomBar() {
-    return SafeArea(
-        bottom: flVideoController.isFullScreen,
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          if (!flVideoController.isLive)
-            SizedBox(
-                width: double.infinity,
-                child: _MaterialVideoProgressBar(controller, onDragStart: () {
-                  widget.onDragProgress?.call(
-                      FlVideoDragProgressEvent.start, _latestValue.position);
-                  _dragging = true;
-                  setState(() {});
-                  _hideTimer?.cancel();
-                }, onDragEnd: () {
-                  widget.onDragProgress?.call(
-                      FlVideoDragProgressEvent.start, _latestValue.position);
-                  _dragging = false;
-                  setState(() {});
-                  _startHideTimer();
-                }, colors: widget.progressColors)),
-          Row(children: <Widget>[
-            if (widget.enablePlay) _buildPlayPause(),
-            if (widget.enableVolume) _buildVolume(),
-            if (widget.enablePosition) _buildPosition(),
-            const Spacer(),
-            if (widget.enableSpeed) _buildPlaybackSpeed(),
-            if (widget.enableSubtitle) _buildSubtitle(),
-            if (widget.enableFullscreen) _buildFullscreenButton(),
-          ]),
-        ]));
-  }
+  SafeArea _buildBottomBar() => SafeArea(
+      bottom: flVideoController.isFullScreen,
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        if (!flVideoController.isLive)
+          SizedBox(
+              width: double.infinity,
+              child: _MaterialVideoProgressBar(controller, onDragStart: () {
+                widget.onDragProgress?.call(
+                    FlVideoDragProgressEvent.start, _latestValue.position);
+                _dragging = true;
+                setState(() {});
+                _hideTimer?.cancel();
+              }, onDragEnd: () {
+                widget.onDragProgress?.call(
+                    FlVideoDragProgressEvent.start, _latestValue.position);
+                _dragging = false;
+                setState(() {});
+                _startHideTimer();
+              }, colors: widget.progressColors)),
+        Row(children: <Widget>[
+          if (widget.enablePlay) _buildPlayPause(),
+          if (widget.enableVolume) _buildVolume(),
+          if (widget.enablePosition) _buildPosition(),
+          const Spacer(),
+          if (widget.enableSpeed) _buildPlaybackSpeed(),
+          if (widget.enableSubtitle) _buildSubtitle(),
+          if (widget.enableFullscreen) _buildFullscreenButton(),
+        ]),
+      ]));
 
   _GestureDetectorIcon _buildSubtitle() => _GestureDetectorIcon(
       onTap: () {
@@ -294,7 +292,7 @@ class _MaterialControlsState extends State<MaterialControls>
           : widget.fullscreenON);
 
   Widget _buildHitArea() {
-    if (_latestValue.isBuffering) {
+    if (_latestValue.isBuffering && !_latestValue.isPlaying) {
       var loading = widget.loading;
       if (widget.onTap != null) {
         loading.onTap(() {

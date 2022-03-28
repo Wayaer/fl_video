@@ -242,7 +242,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
         child: DecoratedBox(
             decoration: BoxDecoration(
                 color: widget.backgroundColor,
-                borderRadius: BorderRadius.circular(10.0)),
+                borderRadius: BorderRadius.circular(10)),
             child: flVideoController.isLive
                 ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -295,7 +295,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
       color: widget.color);
 
   Widget _buildHitArea() {
-    if (_latestValue.isBuffering) {
+    if (_latestValue.isBuffering && !_latestValue.isPlaying) {
       var loading = widget.loading;
       if (widget.onTap != null) {
         loading.onTap(() {
@@ -400,16 +400,14 @@ class _CupertinoControlsState extends State<CupertinoControls>
       icon: widget.skipForward,
       color: widget.color);
 
-  Widget _buildSubtitleToggle() {
-    return _GestureDetectorIcon(
-        onTap: () {
-          widget.onTap?.call(FlVideoTapEvent.subtitle, flVideoController);
-          _subtitleOn = !_subtitleOn;
-          setState(() {});
-        },
-        icon: _subtitleOn ? widget.subtitleON : widget.subtitleOFF,
-        color: widget.color);
-  }
+  Widget _buildSubtitleToggle() => _GestureDetectorIcon(
+      onTap: () {
+        widget.onTap?.call(FlVideoTapEvent.subtitle, flVideoController);
+        _subtitleOn = !_subtitleOn;
+        setState(() {});
+      },
+      icon: _subtitleOn ? widget.subtitleON : widget.subtitleOFF,
+      color: widget.color);
 
   _GestureDetectorIcon _buildSpeed() => _GestureDetectorIcon(
       onTap: () async {
@@ -512,7 +510,6 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
   void _updateState() {
     if (!mounted) return;
-
     _latestValue = controller.value;
     _subtitlesPosition = controller.value.position;
     setState(() {});
