@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Adaptive flutter 3.0.0
+
 ## 0.0.3
 
 * Update dependent versions
