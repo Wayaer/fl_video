@@ -553,8 +553,6 @@ class _GestureDetectorIcon extends StatelessWidget {
       this.onTap,
       this.child,
       this.icon,
-      this.isStartLeft = true,
-      this.isFirst = false,
       this.color,
       this.addBackdropFilter = false,
       this.backgroundColor})
@@ -562,8 +560,6 @@ class _GestureDetectorIcon extends StatelessWidget {
   final GestureTapCallback? onTap;
   final Widget? child;
   final IconData? icon;
-  final bool isStartLeft;
-  final bool isFirst;
   final Color? color;
   final Color? backgroundColor;
   final bool addBackdropFilter;

@@ -9,7 +9,6 @@ environment:
 dependencies:
   fl_video:
     path: ../
-  flutter_waya: ^1.20.2
   flutter:
     sdk: flutter
 

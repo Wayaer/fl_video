@@ -24,7 +24,8 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
-      
+.flutter-plugins-dependencies
+.flutter-plugins
 
 # Android/IntelliJ
 #

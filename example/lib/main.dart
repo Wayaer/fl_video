@@ -1,6 +1,5 @@
 import 'package:fl_video/fl_video.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_waya/flutter_waya.dart';
 
 class AppTheme {
   static final light = ThemeData(
@@ -80,11 +79,11 @@ class _HomePageState extends State<_HomePage> {
                 enablePosition: true,
                 onTap: (FlVideoTapEvent event,
                     FlVideoPlayerController controller) {
-                  log(event);
+                  debugPrint(event.toString());
                 },
                 onDragProgress:
                     (FlVideoDragProgressEvent event, Duration duration) {
-                  log('$event===$duration');
+                  debugPrint('$event===$duration');
                 })
             : CupertinoControls(
                 hideDuration: const Duration(minutes: 30),
@@ -96,11 +95,11 @@ class _HomePageState extends State<_HomePage> {
                 enablePlay: true,
                 onTap: (FlVideoTapEvent event,
                     FlVideoPlayerController controller) {
-                  log(event);
+                  debugPrint(event.toString());
                 },
                 onDragProgress:
                     (FlVideoDragProgressEvent event, Duration duration) {
-                  log('$event===$duration');
+                  debugPrint('$event===$duration');
                 },
                 remainingBuilder: (String position) {
                   return Padding(
