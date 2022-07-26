@@ -14,26 +14,15 @@ class AppTheme {
 }
 
 void main() {
-  runApp(const App());
-}
-
-class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'fl.video',
-        home: _HomePage());
-  }
+  runApp(const MaterialApp(
+      debugShowCheckedModeBanner: false, title: 'FlVideo', home: _HomePage()));
 }
 
 class _HomePage extends StatefulWidget {
   const _HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<_HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<_HomePage> {

@@ -10,7 +10,7 @@ typedef FlVideoPlayerRoutePageBuilder = Widget Function(
     BuildContext context,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
-    _FlVideoPlayerControllerProvider controllerProvider);
+    FlVideoPlayerControllerProvider controllerProvider);
 typedef SubtitlesBuilder = Widget Function(
     BuildContext context, String subtitle);
 
@@ -25,7 +25,7 @@ class FlVideoPlayer extends StatefulWidget {
   final FlVideoPlayerController controller;
 
   @override
-  _FlVideoPlayerState createState() => _FlVideoPlayerState();
+  State<FlVideoPlayer> createState() => _FlVideoPlayerState();
 }
 
 class _FlVideoPlayerState extends State<FlVideoPlayer> {
@@ -72,14 +72,15 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
   @override
   Widget build(BuildContext context) => controllerProvider;
 
-  _FlVideoPlayerControllerProvider get controllerProvider {
+  FlVideoPlayerControllerProvider get controllerProvider {
     double _calculateAspectRatio() {
       final size = MediaQuery.of(context).size;
       final width = size.width;
       final height = size.height;
       return width > height ? width / height : height / width;
     }
-    return _FlVideoPlayerControllerProvider(
+
+    return FlVideoPlayerControllerProvider(
         controller: controller,
         child: SizedBox.expand(
           child: AspectRatio(
@@ -282,9 +283,8 @@ class FlVideoPlayerController extends ChangeNotifier {
   final FlVideoPlayerRoutePageBuilder? routePageBuilder;
 
   static FlVideoPlayerController of(BuildContext context) {
-    final flVideoControllerProvider =
-        context.dependOnInheritedWidgetOfExactType<
-            _FlVideoPlayerControllerProvider>()!;
+    final flVideoControllerProvider = context
+        .dependOnInheritedWidgetOfExactType<FlVideoPlayerControllerProvider>()!;
     return flVideoControllerProvider.controller;
   }
 
@@ -388,8 +388,8 @@ class FlVideoPlayerController extends ChangeNotifier {
   }
 }
 
-class _FlVideoPlayerControllerProvider extends InheritedWidget {
-  const _FlVideoPlayerControllerProvider({
+class FlVideoPlayerControllerProvider extends InheritedWidget {
+  const FlVideoPlayerControllerProvider({
     Key? key,
     required this.controller,
     required Widget child,
@@ -398,6 +398,7 @@ class _FlVideoPlayerControllerProvider extends InheritedWidget {
   final FlVideoPlayerController controller;
 
   @override
-  bool updateShouldNotify(_FlVideoPlayerControllerProvider old) =>
-      controller != old.controller;
+  bool updateShouldNotify(
+          covariant FlVideoPlayerControllerProvider oldWidget) =>
+      controller != oldWidget.controller;
 }

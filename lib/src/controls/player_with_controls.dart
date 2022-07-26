@@ -42,7 +42,7 @@ class VideoProgressBar extends StatefulWidget {
   final bool drawShadow;
 
   @override
-  _VideoProgressBarState createState() => _VideoProgressBarState();
+  State<VideoProgressBar> createState() => _VideoProgressBarState();
 }
 
 class _VideoProgressBarState extends State<VideoProgressBar> {
@@ -262,7 +262,7 @@ class AnimatedPlayPause extends StatefulWidget {
   final Color? color;
 
   @override
-  _AnimatedPlayPauseState createState() => _AnimatedPlayPauseState();
+  State<AnimatedPlayPause> createState() => _AnimatedPlayPauseState();
 }
 
 class _AnimatedPlayPauseState extends State<AnimatedPlayPause>

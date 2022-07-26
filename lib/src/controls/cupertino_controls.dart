@@ -111,7 +111,7 @@ class CupertinoControls extends StatefulWidget {
   final FlVideoControlsProgressDrag? onDragProgress;
 
   @override
-  _CupertinoControlsState createState() => _CupertinoControlsState();
+  State<CupertinoControls> createState() => _CupertinoControlsState();
 }
 
 class _CupertinoControlsState extends State<CupertinoControls>
@@ -206,10 +206,10 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
   @override
   void didChangeDependencies() {
-    final _oldController = _flVideoController;
+    final oldController = _flVideoController;
     _flVideoController = FlVideoPlayerController.of(context);
     controller = flVideoController.videoPlayerController;
-    if (_oldController != flVideoController) {
+    if (oldController != flVideoController) {
       _dispose();
       _initialize();
     }
