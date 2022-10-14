@@ -228,8 +228,7 @@ class CenterPlayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: Colors.transparent,
+    return Align(
         alignment: Alignment.center,
         child: AnimatedOpacity(
             opacity: show ? 1.0 : 0.0,
@@ -239,7 +238,7 @@ class CenterPlayButton extends StatelessWidget {
                 decoration: BoxDecoration(
                     color: backgroundColor, shape: BoxShape.circle),
                 child: IconButton(
-                  iconSize: 32,
+                  iconSize: 40,
                   icon: isFinished
                       ? Icon(Icons.replay, color: iconColor)
                       : AnimatedPlayPause(color: iconColor, playing: isPlaying),

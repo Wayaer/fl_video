@@ -66,6 +66,7 @@ class _HomePageState extends State<_HomePage> {
                 enableVolume: true,
                 enableSubtitle: true,
                 enablePosition: true,
+                enableBottomBar: true,
                 onTap: (FlVideoTapEvent event,
                     FlVideoPlayerController controller) {
                   debugPrint(event.toString());
@@ -82,6 +83,7 @@ class _HomePageState extends State<_HomePage> {
                 enableFullscreen: true,
                 enableVolume: true,
                 enablePlay: true,
+                enableBottomBar: true,
                 onTap: (FlVideoTapEvent event,
                     FlVideoPlayerController controller) {
                   debugPrint(event.toString());

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fl_video/fl_video.dart';
 import 'package:fl_video/src/controls/player_with_controls.dart';
+import 'package:fl_video/src/controls/universal.dart';
 import 'package:flutter/material.dart';
 
 typedef PositionAndAllBuilder = Widget Function(String position, String all);
@@ -33,6 +34,7 @@ class MaterialControls extends StatefulWidget {
     this.enableVolume = true,
     this.enablePlay = true,
     this.enablePosition = true,
+    this.enableBottomBar = true,
     this.isLive = false,
     this.playbackSpeeds = const [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
     this.loading = const CircularProgressIndicator(color: Colors.white),
@@ -43,6 +45,9 @@ class MaterialControls extends StatefulWidget {
   })  : assert(playbackSpeeds.every((speed) => speed > 0),
             'The playbackSpeeds values must all be greater than 0'),
         super(key: key);
+
+  /// Enable BottomBar
+  final bool enableBottomBar;
 
   /// Enable Subtitle
   final bool enableSubtitle;
@@ -153,26 +158,25 @@ class _MaterialControlsState extends State<MaterialControls>
 
     return MouseRegion(
         onHover: (_) => _cancelAndRestartTimer(),
-        child: GestureDetector(
+        child: Universal(
             onTap: _cancelAndRestartTimer,
-            child: AbsorbPointer(
-                absorbing: notifier.hideStuff,
-                child: Stack(children: [
-                  _buildHitArea(),
-                  Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            if (_subtitleOn && widget.enableSubtitle)
-                              _buildSubtitles(),
-                            AnimatedOpacity(
-                                opacity: notifier.hideStuff ? 0.0 : 1.0,
-                                duration: const Duration(milliseconds: 300),
-                                child: _buildBottomBar()),
-                          ]))
-                ]))));
+            absorbing: notifier.hideStuff,
+            isStack: true,
+            children: [
+              _buildHitArea(),
+              Universal(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (_subtitleOn && widget.enableSubtitle) _buildSubtitles(),
+                    if (widget.enableBottomBar)
+                      AnimatedOpacity(
+                          opacity: notifier.hideStuff ? 0.0 : 1.0,
+                          duration: const Duration(milliseconds: 300),
+                          child: _buildBottomBar()),
+                  ])
+            ]));
   }
 
   @override
@@ -217,35 +221,36 @@ class _MaterialControlsState extends State<MaterialControls>
             textAlign: TextAlign.center));
   }
 
-  SafeArea _buildBottomBar() => SafeArea(
-      bottom: flVideoController.isFullScreen,
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        if (!flVideoController.isLive)
-          SizedBox(
-              width: double.infinity,
-              child: _MaterialVideoProgressBar(controller, onDragStart: () {
-                widget.onDragProgress?.call(
-                    FlVideoDragProgressEvent.start, _latestValue.position);
-                _dragging = true;
-                setState(() {});
-                _hideTimer?.cancel();
-              }, onDragEnd: () {
-                widget.onDragProgress?.call(
-                    FlVideoDragProgressEvent.start, _latestValue.position);
-                _dragging = false;
-                setState(() {});
-                _startHideTimer();
-              }, colors: widget.progressColors)),
-        Row(children: <Widget>[
-          if (widget.enablePlay) _buildPlayPause(),
-          if (widget.enableVolume) _buildVolume(),
-          if (widget.enablePosition) _buildPosition(),
-          const Spacer(),
-          if (widget.enableSpeed) _buildPlaybackSpeed(),
-          if (widget.enableSubtitle) _buildSubtitle(),
-          if (widget.enableFullscreen) _buildFullscreenButton(),
-        ]),
-      ]));
+  Widget _buildBottomBar() => Universal(
+          mainAxisSize: MainAxisSize.min,
+          bottom: flVideoController.isFullScreen,
+          children: [
+            if (!flVideoController.isLive)
+              SizedBox(
+                  width: double.infinity,
+                  child: _MaterialVideoProgressBar(controller, onDragStart: () {
+                    widget.onDragProgress?.call(
+                        FlVideoDragProgressEvent.start, _latestValue.position);
+                    _dragging = true;
+                    setState(() {});
+                    _hideTimer?.cancel();
+                  }, onDragEnd: () {
+                    widget.onDragProgress?.call(
+                        FlVideoDragProgressEvent.start, _latestValue.position);
+                    _dragging = false;
+                    setState(() {});
+                    _startHideTimer();
+                  }, colors: widget.progressColors)),
+            Row(children: <Widget>[
+              if (widget.enablePlay) _buildPlayPause(),
+              if (widget.enableVolume) _buildVolume(),
+              if (widget.enablePosition) _buildPosition(),
+              const Spacer(),
+              if (widget.enableSpeed) _buildPlaybackSpeed(),
+              if (widget.enableSubtitle) _buildSubtitle(),
+              if (widget.enableFullscreen) _buildFullscreenButton(),
+            ]),
+          ]);
 
   _GestureDetectorIcon _buildSubtitle() => _GestureDetectorIcon(
       onTap: () {
@@ -274,12 +279,8 @@ class _MaterialControlsState extends State<MaterialControls>
                 speeds: widget.playbackSpeeds,
                 selected: _latestValue.playbackSpeed));
 
-        if (chosenSpeed != null) {
-          controller.setPlaybackSpeed(chosenSpeed);
-        }
-        if (_latestValue.isPlaying) {
-          _startHideTimer();
-        }
+        if (chosenSpeed != null) controller.setPlaybackSpeed(chosenSpeed);
+        if (_latestValue.isPlaying) _startHideTimer();
       });
 
   _GestureDetectorIcon _buildFullscreenButton() => _GestureDetectorIcon(
@@ -373,7 +374,7 @@ class _MaterialControlsState extends State<MaterialControls>
           child: text);
     }
     if (widget.onTap != null) {
-      return GestureDetector(
+      return Universal(
           child: text,
           onTap: () {
             widget.onTap!(FlVideoTapEvent.position, flVideoController);

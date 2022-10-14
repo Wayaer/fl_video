@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Add `enableBottomBar`
+
 ## 1.0.1
 
 * Adaptive flutter 3.0.0

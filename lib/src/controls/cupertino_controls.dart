@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:fl_video/fl_video.dart';
 import 'package:fl_video/src/controls/player_with_controls.dart';
+import 'package:fl_video/src/controls/universal.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -45,12 +46,16 @@ class CupertinoControls extends StatefulWidget {
     this.errorBuilder,
     this.onTap,
     this.onDragProgress,
+    this.enableBottomBar = true,
   })  : assert(playbackSpeeds.every((speed) => speed > 0),
             'The playbackSpeeds values must all be greater than 0'),
         super(key: key);
   final FlVideoPlayerProgressColors progressColors;
   final Color backgroundColor;
   final Color color;
+
+  /// Enable BottomBar
+  final bool enableBottomBar;
 
   /// Enable Subtitle
   final bool enableSubtitle;
@@ -159,36 +164,35 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
     return MouseRegion(
         onHover: (_) => _cancelAndRestartTimer(),
-        child: GestureDetector(
+        child: Universal(
+            isStack: true,
             onTap: _cancelAndRestartTimer,
-            child: AbsorbPointer(
-                absorbing: notifier.hideStuff,
-                child: Stack(children: [
-                  _buildHitArea(),
-                  Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            AnimatedOpacity(
-                                opacity: notifier.hideStuff ? 0.0 : 1.0,
-                                duration: const Duration(milliseconds: 300),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      _buildFullscreen(),
-                                      if (widget.enableVolume) _buildVolume(),
-                                    ])),
-                            const Spacer(),
-                            if (_subtitleOn && widget.enableSubtitle)
-                              _buildSubtitles(flVideoController.subtitle!),
-                            AnimatedOpacity(
-                                opacity: notifier.hideStuff ? 0.0 : 1.0,
-                                duration: const Duration(milliseconds: 300),
-                                child: _buildBottomBar())
-                          ]))
-                ]))));
+            absorbing: notifier.hideStuff,
+            children: [
+              _buildHitArea(),
+              Universal(
+                  padding: const EdgeInsets.all(12.0),
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AnimatedOpacity(
+                        opacity: notifier.hideStuff ? 0.0 : 1.0,
+                        duration: const Duration(milliseconds: 300),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _buildFullscreen(),
+                              if (widget.enableVolume) _buildVolume(),
+                            ])),
+                    const Spacer(),
+                    if (_subtitleOn && widget.enableSubtitle)
+                      _buildSubtitles(flVideoController.subtitle!),
+                    if (widget.enableBottomBar)
+                      AnimatedOpacity(
+                          opacity: notifier.hideStuff ? 0.0 : 1.0,
+                          duration: const Duration(milliseconds: 300),
+                          child: _buildBottomBar())
+                  ])
+            ]));
   }
 
   @override
@@ -237,31 +241,30 @@ class _CupertinoControlsState extends State<CupertinoControls>
   }
 
   Widget _buildBottomBar() {
-    return SafeArea(
+    return Universal(
         bottom: flVideoController.isFullScreen,
-        child: DecoratedBox(
-            decoration: BoxDecoration(
-                color: widget.backgroundColor,
-                borderRadius: BorderRadius.circular(10)),
-            child: flVideoController.isLive
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          _buildPlayPause(),
-                          _buildLive(),
-                        ]))
-                : Row(children: <Widget>[
-                    if (widget.enableSkip) _buildSkipBack(),
-                    if (widget.enablePlay) _buildPlayPause(),
-                    if (widget.enableSkip) _buildSkipForward(),
-                    if (widget.enablePosition) _buildPosition(),
-                    _buildProgressBar(),
-                    if (widget.enablePosition) _buildRemaining(),
-                    if (widget.enableSubtitle) _buildSubtitleToggle(),
-                    if (widget.enableSpeed) _buildSpeed(),
-                  ])));
+        decoration: BoxDecoration(
+            color: widget.backgroundColor,
+            borderRadius: BorderRadius.circular(10)),
+        child: flVideoController.isLive
+            ? Universal(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                direction: Axis.horizontal,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                    _buildPlayPause(),
+                    _buildLive(),
+                  ])
+            : Row(children: <Widget>[
+                if (widget.enableSkip) _buildSkipBack(),
+                if (widget.enablePlay) _buildPlayPause(),
+                if (widget.enableSkip) _buildSkipForward(),
+                if (widget.enablePosition) _buildPosition(),
+                _buildProgressBar(),
+                if (widget.enablePosition) _buildRemaining(),
+                if (widget.enableSubtitle) _buildSubtitleToggle(),
+                if (widget.enableSpeed) _buildSpeed(),
+              ]));
   }
 
   Widget _buildLive() =>
@@ -294,6 +297,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
       icon: _latestValue.volume > 0 ? widget.volumeON : widget.volumeOFF,
       color: widget.color);
 
+  /// 中间暂停播放
   Widget _buildHitArea() {
     if (_latestValue.isBuffering && !_latestValue.isPlaying) {
       var loading = widget.loading;

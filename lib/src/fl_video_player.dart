@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fl_video/fl_video.dart';
 import 'package:fl_video/src/controls/player_with_controls.dart';
+import 'package:fl_video/src/controls/universal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
@@ -73,7 +74,7 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
   Widget build(BuildContext context) => controllerProvider;
 
   FlVideoPlayerControllerProvider get controllerProvider {
-    double _calculateAspectRatio() {
+    double calculateAspectRatio() {
       final size = MediaQuery.of(context).size;
       final width = size.width;
       final height = size.height;
@@ -82,31 +83,27 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
 
     return FlVideoPlayerControllerProvider(
         controller: controller,
-        child: SizedBox.expand(
-          child: AspectRatio(
-              aspectRatio: _calculateAspectRatio(),
-              child: ColoredBox(
-                  color: Colors.black,
-                  child: Stack(children: <Widget>[
-                    ValueListenableBuilder(
-                        valueListenable: _aspectRatio,
-                        builder: (_, double aspectRatio, __) => aspectRatio != 0
-                            ? Center(
-                                child: AspectRatio(
-                                    aspectRatio: controller
-                                        .videoPlayerController
-                                        .value
-                                        .aspectRatio,
-                                    child: VideoPlayer(
-                                        controller.videoPlayerController)))
-                            : controller.placeholder ?? const SizedBox()),
-                    if (controller.overlay != null) controller.overlay!,
-                    if (controller.controls != null)
-                      controller.isFullScreen
-                          ? SafeArea(bottom: false, child: controller.controls!)
-                          : controller.controls!
-                  ]))),
-        ));
+        child: Universal(
+            expand: true,
+            color: Colors.black,
+            isStack: true,
+            aspectRatio: calculateAspectRatio(),
+            children: [
+              ValueListenableBuilder(
+                  valueListenable: _aspectRatio,
+                  builder: (_, double aspectRatio, __) => aspectRatio != 0
+                      ? Universal(
+                          alignment: Alignment.center,
+                          aspectRatio: controller
+                              .videoPlayerController.value.aspectRatio,
+                          child: VideoPlayer(controller.videoPlayerController))
+                      : controller.placeholder ?? const SizedBox()),
+              if (controller.overlay != null) controller.overlay!,
+              if (controller.controls != null)
+                controller.isFullScreen
+                    ? SafeArea(bottom: false, child: controller.controls!)
+                    : controller.controls!
+            ]));
   }
 
   Future<dynamic> _pushFullScreenWidget(BuildContext context) async {
