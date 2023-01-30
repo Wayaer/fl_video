@@ -1,10 +1,14 @@
+## 1.2.0
+
+* Compatible with Flutter 3.7.0
+
 ## 1.1.0
 
 * Add `enableBottomBar`
 
 ## 1.0.1
 
-* Adaptive flutter 3.0.0
+* Compatible with Flutter 3.3.0
 
 ## 0.0.3
 

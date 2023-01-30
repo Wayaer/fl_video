@@ -1,17 +1,17 @@
 name: fl_video
 description: For the video_Player control panel, add Cupertino and Material styles
-version: 1.1.0
-homepage: https://github.com/Wayaer/fl_video
+version: 1.2.0
+repository: https://github.com/Wayaer/fl_video.git
 
 environment:
   sdk: '>=2.18.0 <3.0.0'
   flutter: '>=3.0.0'
 
 dependencies:
-  cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
-  video_player: ^2.4.7
+  cupertino_icons: ^1.0.5
+  video_player: ^2.5.1
   wakelock: ^0.6.2
 
 dev_dependencies:
