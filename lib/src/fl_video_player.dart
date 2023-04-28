@@ -11,6 +11,7 @@ typedef FlVideoPlayerRoutePageBuilder = Widget Function(
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     FlVideoPlayerControllerProvider controllerProvider);
+
 typedef SubtitlesBuilder = Widget Function(
     BuildContext context, String subtitle);
 
@@ -105,7 +106,7 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
             ]));
   }
 
-  Future<dynamic> _pushFullScreenWidget(BuildContext context) async {
+  Future<void> _pushFullScreenWidget(BuildContext context) async {
     final TransitionRoute<void> route = PageRouteBuilder<void>(pageBuilder:
         (BuildContext context, Animation<double> animation,
             Animation<double> secondaryAnimation) {

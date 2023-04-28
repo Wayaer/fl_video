@@ -1,3 +1,7 @@
+## 1.2.0+1
+
+* Update video_player
+
 ## 1.2.0
 
 * Compatible with Flutter 3.7.0
