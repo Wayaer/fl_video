@@ -93,7 +93,7 @@ class MaterialControls extends StatefulWidget {
   /// Hide the Controls,
   final Duration hideDuration;
 
-  //// loading
+  /// loading
   final Widget loading;
 
   /// Defines the set of allowed playback speeds user can change
@@ -120,7 +120,7 @@ class _MaterialControlsState extends State<MaterialControls>
   Timer? _hideTimer;
   Timer? _initTimer;
 
-  // late final Duration _position = const Duration();
+  /// late final Duration _position = const Duration();
   bool _subtitleOn = false;
   Timer? _showAfterExpandCollapseTimer;
   bool _dragging = false;
@@ -129,7 +129,7 @@ class _MaterialControlsState extends State<MaterialControls>
   late VideoPlayerController controller;
   FlVideoPlayerController? _flVideoController;
 
-  // We know that _flVideoController is set in didChangeDependencies
+  /// We know that _flVideoController is set in didChangeDependencies
   FlVideoPlayerController get flVideoController => _flVideoController!;
 
   @override
@@ -374,11 +374,9 @@ class _MaterialControlsState extends State<MaterialControls>
           child: text);
     }
     if (widget.onTap != null) {
-      return Universal(
-          child: text,
-          onTap: () {
-            widget.onTap!(FlVideoTapEvent.position, flVideoController);
-          });
+      return text.onTap(() {
+        widget.onTap!(FlVideoTapEvent.position, flVideoController);
+      });
     }
     return text;
   }
@@ -429,7 +427,6 @@ class _MaterialControlsState extends State<MaterialControls>
         controller.pause();
       } else {
         _cancelAndRestartTimer();
-
         if (!controller.value.isInitialized) {
           controller.initialize().then((_) {
             controller.play();

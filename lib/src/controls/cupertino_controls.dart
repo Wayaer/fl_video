@@ -88,7 +88,7 @@ class CupertinoControls extends StatefulWidget {
   /// Hide the Controls,
   final Duration hideDuration;
 
-  //// loading
+  /// loading
   final Widget loading;
 
   /// Enable Position
@@ -134,7 +134,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
   late VideoPlayerController controller;
 
-  // We know that _flVideoController is set in didChangeDependencies
+  /// We know that _flVideoController is set in didChangeDependencies
   FlVideoPlayerController get flVideoController => _flVideoController!;
   FlVideoPlayerController? _flVideoController;
 
@@ -285,7 +285,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
       addBackdropFilter: true,
       backgroundColor: widget.backgroundColor,
       onTap: () {
-        widget.onTap!(FlVideoTapEvent.volume, flVideoController);
+        widget.onTap?.call(FlVideoTapEvent.volume, flVideoController);
         _cancelAndRestartTimer();
         if (_latestValue.volume == 0) {
           controller.setVolume(_latestVolume ?? 0.5);
@@ -371,11 +371,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
         child: Text('-${remaining.formatDuration()}',
             style: TextStyle(color: widget.color, fontSize: 12.0)));
     if (widget.onTap != null) {
-      return GestureDetector(
-          child: text,
-          onTap: () {
-            widget.onTap!(FlVideoTapEvent.remaining, flVideoController);
-          });
+      return text.onTap(() {
+        widget.onTap!(FlVideoTapEvent.remaining, flVideoController);
+      });
     }
     return text;
   }
@@ -492,7 +490,6 @@ class _CupertinoControlsState extends State<CupertinoControls>
       controller.pause();
     } else {
       _cancelAndRestartTimer();
-
       if (!controller.value.isInitialized) {
         controller.initialize().then((_) {
           controller.play();
