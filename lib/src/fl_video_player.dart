@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:fl_video/fl_video.dart';
 import 'package:fl_video/src/controls/player_with_controls.dart';
-import 'package:fl_video/src/controls/universal.dart';
+import 'package:fl_video/src/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

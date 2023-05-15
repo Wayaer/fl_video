@@ -3,7 +3,7 @@ import 'dart:math' as math;
 
 import 'package:fl_video/fl_video.dart';
 import 'package:fl_video/src/controls/player_with_controls.dart';
-import 'package:fl_video/src/controls/universal.dart';
+import 'package:fl_video/src/extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -345,18 +345,14 @@ class _CupertinoControlsState extends State<CupertinoControls>
     if (widget.positionBuilder != null) {
       return widget.positionBuilder!(position.formatDuration());
     }
-
     Widget text = Padding(
         padding: const EdgeInsets.only(left: 6, top: 8, bottom: 8),
         child: Text(position.formatDuration(),
             style: TextStyle(color: widget.color, fontSize: 12.0)));
-
     if (widget.onTap != null) {
-      return GestureDetector(
-          child: text,
-          onTap: () {
-            widget.onTap!(FlVideoTapEvent.position, flVideoController);
-          });
+      return text.onTap(() {
+        widget.onTap!(FlVideoTapEvent.position, flVideoController);
+      });
     }
     return text;
   }

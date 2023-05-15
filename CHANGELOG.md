@@ -1,3 +1,7 @@
+## 1.2.2
+
+* Fixed an error adding onTap
+
 ## 1.2.1
 
 * Dart sdk: '>=2.18.0 <4.0.0'

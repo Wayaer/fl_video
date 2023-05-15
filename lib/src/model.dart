@@ -109,9 +109,8 @@ class Subtitle {
   final String text;
 
   @override
-  String toString() {
-    return 'Subtitle(index: $index, start: $start, end: $end, text: $text)';
-  }
+  String toString() =>
+      'Subtitle(index: $index, start: $start, end: $end, text: $text)';
 
   @override
   bool operator ==(Object other) {

@@ -1,4 +1,43 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+
+extension ExtensionWidget on Widget {
+  GestureDetector onTap(GestureTapCallback? onTap, {Key? key}) =>
+      GestureDetector(onTap: onTap, key: key, child: this);
+}
+
+extension ExtensionDuration on Duration {
+  String formatDuration() {
+    final ms = inMilliseconds;
+
+    int seconds = ms ~/ 1000;
+    final int hours = seconds ~/ 3600;
+    seconds = seconds % 3600;
+    final minutes = seconds ~/ 60;
+    seconds = seconds % 60;
+
+    final hoursString = hours >= 10
+        ? '$hours'
+        : hours == 0
+            ? '00'
+            : '0$hours';
+
+    final minutesString = minutes >= 10
+        ? '$minutes'
+        : minutes == 0
+            ? '00'
+            : '0$minutes';
+
+    final secondsString = seconds >= 10
+        ? '$seconds'
+        : seconds == 0
+            ? '00'
+            : '0$seconds';
+
+    final formattedTime =
+        '${hoursString == '00' ? '' : '$hoursString:'}$minutesString:$secondsString';
+    return formattedTime;
+  }
+}
 
 class Universal extends StatelessWidget {
   const Universal({
