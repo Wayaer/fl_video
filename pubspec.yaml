@@ -1,6 +1,6 @@
 name: fl_video
 description: For the video_Player control panel, add Cupertino and Material styles
-version: 1.2.2
+version: 1.2.3
 repository: https://github.com/Wayaer/fl_video.git
 
 environment:

@@ -51,15 +51,16 @@ class _HomePageState extends State<_HomePage> {
         videoPlayerController: videoPlayerController,
         autoPlay: true,
         looping: true,
-        overlay: const Center(
-            child: Text('overlay',
-                style: TextStyle(color: Colors.lightBlue, fontSize: 20))),
+        overlay: const IgnorePointer(
+            child: Center(
+                child: Text('overlay',
+                    style: TextStyle(color: Colors.lightBlue, fontSize: 20)))),
         placeholder: const Center(
             child: Text('placeholder',
                 style: TextStyle(color: Colors.red, fontSize: 20))),
         controls: videoPlayerController == _videoPlayerController1
             ? MaterialControls(
-                hideDuration: const Duration(minutes: 30),
+                hideDuration: const Duration(seconds: 5),
                 enablePlay: true,
                 enableFullscreen: true,
                 enableSpeed: true,
@@ -76,7 +77,7 @@ class _HomePageState extends State<_HomePage> {
                   debugPrint('$event===$duration');
                 })
             : CupertinoControls(
-                hideDuration: const Duration(minutes: 30),
+                hideDuration: const Duration(seconds: 5),
                 enableSpeed: true,
                 enableSkip: true,
                 enableSubtitle: true,

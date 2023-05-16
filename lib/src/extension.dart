@@ -45,6 +45,7 @@ class Universal extends StatelessWidget {
     this.decoration,
     this.padding,
     this.onTap,
+    this.onDoubleTap,
     this.child,
     this.children,
     this.direction = Axis.vertical,
@@ -72,6 +73,7 @@ class Universal extends StatelessWidget {
 
   /// [GestureDetector]
   final GestureTapCallback? onTap;
+  final GestureTapCallback? onDoubleTap;
 
   /// [Flex]
   final List<Widget>? children;
@@ -130,8 +132,9 @@ class Universal extends StatelessWidget {
     if (decoration != null) {
       current = DecoratedBox(decoration: decoration!, child: current);
     }
-    if (onTap != null) {
-      current = GestureDetector(onTap: onTap, child: current);
+    if (onTap != null || onDoubleTap != null) {
+      current = GestureDetector(
+          onTap: onTap, onDoubleTap: onDoubleTap, child: current);
     }
 
     if (aspectRatio != null) {

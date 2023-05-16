@@ -1,3 +1,7 @@
+## 1.2.3
+
+* Fixed the subtitle issue
+
 ## 1.2.2
 
 * Fixed an error adding onTap

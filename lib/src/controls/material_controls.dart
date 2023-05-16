@@ -151,8 +151,7 @@ class _MaterialControlsState extends State<MaterialControls>
               onTap: widget.onTap == null
                   ? null
                   : () {
-                      widget.onTap
-                          ?.call(FlVideoTapEvent.error, flVideoController);
+                      widget.onTap!(FlVideoTapEvent.error, flVideoController);
                     });
     }
 
@@ -169,7 +168,10 @@ class _MaterialControlsState extends State<MaterialControls>
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    if (_subtitleOn && widget.enableSubtitle) _buildSubtitles(),
+                    if (_subtitleOn &&
+                        widget.enableSubtitle &&
+                        flVideoController.subtitle != null)
+                      _buildSubtitles(),
                     if (widget.enableBottomBar)
                       AnimatedOpacity(
                           opacity: notifier.hideStuff ? 0.0 : 1.0,
@@ -420,25 +422,24 @@ class _MaterialControlsState extends State<MaterialControls>
 
   void _playPause() {
     final isFinished = _latestValue.position >= _latestValue.duration;
-    setState(() {
-      if (controller.value.isPlaying) {
-        notifier.hideStuff = false;
-        _hideTimer?.cancel();
-        controller.pause();
-      } else {
-        _cancelAndRestartTimer();
-        if (!controller.value.isInitialized) {
-          controller.initialize().then((_) {
-            controller.play();
-          });
-        } else {
-          if (isFinished) {
-            controller.seekTo(const Duration());
-          }
+    if (controller.value.isPlaying) {
+      notifier.hideStuff = false;
+      _hideTimer?.cancel();
+      controller.pause();
+    } else {
+      _cancelAndRestartTimer();
+      if (!controller.value.isInitialized) {
+        controller.initialize().then((_) {
           controller.play();
+        });
+      } else {
+        if (isFinished) {
+          controller.seekTo(const Duration());
         }
+        controller.play();
       }
-    });
+    }
+    setState(() {});
   }
 
   void _startHideTimer() {

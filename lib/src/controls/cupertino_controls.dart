@@ -157,8 +157,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
               onTap: widget.onTap == null
                   ? null
                   : () {
-                      widget.onTap
-                          ?.call(FlVideoTapEvent.error, flVideoController);
+                      widget.onTap!(FlVideoTapEvent.error, flVideoController);
                     });
     }
 
@@ -184,8 +183,10 @@ class _CupertinoControlsState extends State<CupertinoControls>
                               if (widget.enableVolume) _buildVolume(),
                             ])),
                     const Spacer(),
-                    if (_subtitleOn && widget.enableSubtitle)
-                      _buildSubtitles(flVideoController.subtitle!),
+                    if (_subtitleOn &&
+                        widget.enableSubtitle &&
+                        flVideoController.subtitle != null)
+                      _buildSubtitles(),
                     if (widget.enableBottomBar)
                       AnimatedOpacity(
                           opacity: notifier.hideStuff ? 0.0 : 1.0,
@@ -220,11 +221,12 @@ class _CupertinoControlsState extends State<CupertinoControls>
     super.didChangeDependencies();
   }
 
-  Widget _buildSubtitles(Subtitles subtitles) {
+  Widget _buildSubtitles() {
     if (_subtitlesPosition == null) {
       return const SizedBox();
     }
-    final currentSubtitle = subtitles.getByPosition(_subtitlesPosition!);
+    final currentSubtitle =
+        _flVideoController!.subtitle!.getByPosition(_subtitlesPosition!);
     if (currentSubtitle.isEmpty) {
       return const SizedBox();
     }
