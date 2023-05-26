@@ -106,8 +106,7 @@ class _HomePageState extends State<_HomePage> {
                       child: Text(position,
                           style: const TextStyle(
                               fontSize: 16, color: Colors.lightBlue)));
-                },
-              ),
+                }),
         subtitle: Subtitles([
           Subtitle(
               index: 0,
