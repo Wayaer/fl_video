@@ -1,3 +1,8 @@
+## 1.3.0
+
+* Change `wakelock` to `wakelock_plus`
+* Update `video_player` to the latest version
+
 ## 1.2.3
 
 * Fixed the subtitle issue

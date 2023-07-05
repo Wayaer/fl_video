@@ -123,7 +123,7 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
     });
     onEnterFullScreen();
     if (!controller.allowedScreenSleep) {
-      Wakelock.enable();
+      WakelockPlus.enable();
     }
     await Navigator.of(context, rootNavigator: true).push(route);
 
@@ -132,7 +132,7 @@ class _FlVideoPlayerState extends State<FlVideoPlayer> {
 
     // The wakelock plugins checks whether it needs to perform an action internally,
     // so we do not need to check Wakelock.isEnabled.
-    Wakelock.disable();
+    WakelockPlus.disable();
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: controller.systemOverlaysAfterFullScreen);

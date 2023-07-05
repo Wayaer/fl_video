@@ -27,11 +27,11 @@ class _HomePage extends StatefulWidget {
 
 class _HomePageState extends State<_HomePage> {
   late final VideoPlayerController _videoPlayerController1 =
-      VideoPlayerController.network(
-          'https://assets.mixkit.co/videos/preview/mixkit-daytime-city-traffic-aerial-view-56-large.mp4');
+      VideoPlayerController.networkUrl(Uri.parse(
+          'https://assets.mixkit.co/videos/preview/mixkit-daytime-city-traffic-aerial-view-56-large.mp4'));
   late final VideoPlayerController _videoPlayerController2 =
-      VideoPlayerController.network(
-          'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4');
+      VideoPlayerController.networkUrl(Uri.parse(
+          'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4'));
   FlVideoPlayerController? _controller;
 
   @override
