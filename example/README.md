@@ -1,1 +1,1 @@
-# FlVideoPlayer Example
+# Example

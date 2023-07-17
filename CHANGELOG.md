@@ -1,4 +1,4 @@
-## 1.3.0
+## 1.3.1
 
 * Change `wakelock` to `wakelock_plus`
 * Update `video_player` to the latest version
