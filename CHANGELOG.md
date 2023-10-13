@@ -1,3 +1,7 @@
+## 1.3.2
+
+* Update dependency
+
 ## 1.3.1
 
 * Change `wakelock` to `wakelock_plus`
