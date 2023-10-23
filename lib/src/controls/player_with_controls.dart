@@ -26,11 +26,11 @@ class VideoProgressBar extends StatefulWidget {
     this.onDragEnd,
     this.onDragStart,
     this.onDragUpdate,
-    Key? key,
+    super.key,
     required this.barHeight,
     required this.handleHeight,
     required this.drawShadow,
-  }) : super(key: key);
+  });
 
   final VideoPlayerController controller;
   final FlVideoPlayerProgressColors colors;
@@ -173,14 +173,14 @@ class _ProgressBarPainter extends CustomPainter {
 
 class CenterPlayButton extends StatelessWidget {
   const CenterPlayButton({
-    Key? key,
+    super.key,
     required this.backgroundColor,
     this.iconColor,
     required this.show,
     required this.isPlaying,
     required this.isFinished,
     this.onPressed,
-  }) : super(key: key);
+  });
 
   final Color backgroundColor;
   final Color? iconColor;
@@ -212,11 +212,11 @@ class CenterPlayButton extends StatelessWidget {
 /// A widget that animates implicitly between a play and a pause icon.
 class AnimatedPlayPause extends StatefulWidget {
   const AnimatedPlayPause({
-    Key? key,
+    super.key,
     required this.playing,
     this.size,
     this.color,
-  }) : super(key: key);
+  });
 
   final double? size;
   final bool playing;
@@ -260,14 +260,13 @@ class _AnimatedPlayPauseState extends State<AnimatedPlayPause>
 }
 
 class DefaultIcon extends Icon {
-  const DefaultIcon(IconData icon, {double size = 22, Color? color, Key? key})
-      : super(icon, color: color, size: size, key: key);
+  const DefaultIcon(IconData super.icon,
+      {double super.size = 22, super.color, super.key});
 }
 
 class DefaultError extends StatelessWidget {
   const DefaultError(
-      {Key? key, required this.color, required this.error, this.onTap})
-      : super(key: key);
+      {super.key, required this.color, required this.error, this.onTap});
 
   final Color color;
   final IconData error;

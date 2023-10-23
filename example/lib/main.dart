@@ -19,7 +19,7 @@ void main() {
 }
 
 class _HomePage extends StatefulWidget {
-  const _HomePage({Key? key}) : super(key: key);
+  const _HomePage();
 
   @override
   State<_HomePage> createState() => _HomePageState();
@@ -161,8 +161,8 @@ class _HomePageState extends State<_HomePage> {
 }
 
 class ElevatedText extends StatelessWidget {
-  const ElevatedText({Key? key, this.onPressed, required this.text})
-      : super(key: key);
+  const ElevatedText({super.key, this.onPressed, required this.text});
+
   final VoidCallback? onPressed;
   final String text;
 

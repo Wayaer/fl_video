@@ -41,7 +41,7 @@ extension ExtensionDuration on Duration {
 
 class Universal extends StatelessWidget {
   const Universal({
-    Key? key,
+    super.key,
     this.decoration,
     this.padding,
     this.onTap,
@@ -62,7 +62,8 @@ class Universal extends StatelessWidget {
     this.aspectRatio,
     this.color,
     this.alignment,
-  }) : super(key: key);
+  });
+
   final Widget? child;
 
   /// [DecoratedBox]

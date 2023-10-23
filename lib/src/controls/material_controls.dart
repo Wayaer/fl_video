@@ -11,7 +11,7 @@ typedef FlVideoControlsErrorBuilder = Widget Function(
 
 class MaterialControls extends StatefulWidget {
   MaterialControls({
-    Key? key,
+    super.key,
     this.progressColors = const FlVideoPlayerProgressColors(
         played: Color(0x80FFFFFF),
         handle: Color(0xFFFFFFFF),
@@ -42,9 +42,8 @@ class MaterialControls extends StatefulWidget {
     this.errorBuilder,
     this.onTap,
     this.onDragProgress,
-  })  : assert(playbackSpeeds.every((speed) => speed > 0),
-            'The playbackSpeeds values must all be greater than 0'),
-        super(key: key);
+  }) : assert(playbackSpeeds.every((speed) => speed > 0),
+            'The playbackSpeeds values must all be greater than 0');
 
   /// Enable BottomBar
   final bool enableBottomBar;
@@ -458,14 +457,13 @@ class _MaterialControlsState extends State<MaterialControls>
 
 class _GestureDetectorIcon extends StatelessWidget {
   const _GestureDetectorIcon(
-      {Key? key,
-      this.onTap,
+      {this.onTap,
       this.child,
       this.icon,
       this.isStartLeft = true,
       this.isFirst = false,
-      this.color})
-      : super(key: key);
+      this.color});
+
   final GestureTapCallback? onTap;
   final Widget? child;
   final IconData? icon;
@@ -495,29 +493,19 @@ class _GestureDetectorIcon extends StatelessWidget {
 
 class _MaterialVideoProgressBar extends VideoProgressBar {
   const _MaterialVideoProgressBar(
-    VideoPlayerController controller, {
-    FlVideoPlayerProgressColors colors = const FlVideoPlayerProgressColors(),
-    Function()? onDragStart,
-    Function()? onDragEnd,
-    Function()? onDragUpdate,
-  }) : super(controller,
-            barHeight: 3,
-            handleHeight: 6,
-            drawShadow: false,
-            colors: colors,
-            onDragEnd: onDragEnd,
-            onDragStart: onDragStart,
-            onDragUpdate: onDragUpdate);
+    super.controller, {
+    super.colors,
+    super.onDragStart,
+    super.onDragEnd,
+  }) : super(barHeight: 3, handleHeight: 6, drawShadow: false);
 }
 
 class _PlaybackSpeedDialog extends StatelessWidget {
   const _PlaybackSpeedDialog({
-    Key? key,
     required List<double> speeds,
     required double selected,
   })  : _speeds = speeds,
-        _selected = selected,
-        super(key: key);
+        _selected = selected;
 
   final List<double> _speeds;
   final double _selected;

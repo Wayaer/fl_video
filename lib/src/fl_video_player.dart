@@ -20,7 +20,7 @@ typedef SubtitlesBuilder = Widget Function(
 /// `video_player` is pretty low level. FlVideoPlayer wraps it in a friendly skin to
 /// make it easy to use!
 class FlVideoPlayer extends StatefulWidget {
-  const FlVideoPlayer({Key? key, required this.controller}) : super(key: key);
+  const FlVideoPlayer({super.key, required this.controller});
 
   /// The [FlVideoPlayerController]
   final FlVideoPlayerController controller;
@@ -387,10 +387,10 @@ class FlVideoPlayerController extends ChangeNotifier {
 
 class FlVideoPlayerControllerProvider extends InheritedWidget {
   const FlVideoPlayerControllerProvider({
-    Key? key,
+    super.key,
     required this.controller,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
 
   final FlVideoPlayerController controller;
 

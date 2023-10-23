@@ -12,7 +12,7 @@ typedef RemainingBuilder = Widget Function(String remaining);
 
 class CupertinoControls extends StatefulWidget {
   CupertinoControls({
-    Key? key,
+    super.key,
     this.hideDuration = const Duration(seconds: 4),
     this.backgroundColor = const Color(0x90000000),
     this.color = const Color(0xFFFFFFFF),
@@ -47,9 +47,8 @@ class CupertinoControls extends StatefulWidget {
     this.onTap,
     this.onDragProgress,
     this.enableBottomBar = true,
-  })  : assert(playbackSpeeds.every((speed) => speed > 0),
-            'The playbackSpeeds values must all be greater than 0'),
-        super(key: key);
+  }) : assert(playbackSpeeds.every((speed) => speed > 0),
+            'The playbackSpeeds values must all be greater than 0');
   final FlVideoPlayerProgressColors progressColors;
   final Color backgroundColor;
   final Color color;
@@ -517,12 +516,10 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
 class _PlaybackSpeedDialog extends StatelessWidget {
   const _PlaybackSpeedDialog({
-    Key? key,
     required List<double> speeds,
     required double selected,
   })  : _speeds = speeds,
-        _selected = selected,
-        super(key: key);
+        _selected = selected;
 
   final List<double> _speeds;
   final double _selected;
@@ -548,14 +545,13 @@ class _PlaybackSpeedDialog extends StatelessWidget {
 
 class _GestureDetectorIcon extends StatelessWidget {
   const _GestureDetectorIcon(
-      {Key? key,
-      this.onTap,
+      {this.onTap,
       this.child,
       this.icon,
       this.color,
       this.addBackdropFilter = false,
-      this.backgroundColor})
-      : super(key: key);
+      this.backgroundColor});
+
   final GestureTapCallback? onTap;
   final Widget? child;
   final IconData? icon;
@@ -583,23 +579,14 @@ class _GestureDetectorIcon extends StatelessWidget {
 }
 
 class _Icon extends Icon {
-  const _Icon(IconData? icon, {double size = 22, Color? color})
-      : super(icon, color: color, size: size);
+  const _Icon(super.icon, {super.color});
 }
 
 class _CupertinoVideoProgressBar extends VideoProgressBar {
   const _CupertinoVideoProgressBar(
-    VideoPlayerController controller, {
-    FlVideoPlayerProgressColors colors = const FlVideoPlayerProgressColors(),
-    Function()? onDragStart,
-    Function()? onDragEnd,
-    Function()? onDragUpdate,
-  }) : super(controller,
-            barHeight: 5,
-            handleHeight: 6,
-            drawShadow: true,
-            colors: colors,
-            onDragEnd: onDragEnd,
-            onDragStart: onDragStart,
-            onDragUpdate: onDragUpdate);
+    super.controller, {
+    super.colors,
+    super.onDragStart,
+    super.onDragEnd,
+  }) : super(barHeight: 5, handleHeight: 6, drawShadow: true);
 }
