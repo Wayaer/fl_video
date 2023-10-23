@@ -7,10 +7,11 @@ environment:
   sdk: '>=2.18.0 <4.0.0'
 
 dependencies:
-  fl_video:
-    path: ../
+
   flutter:
     sdk: flutter
+  fl_video:
+    path: ../
 
 dev_dependencies:
   flutter_lints: ^3.0.0
