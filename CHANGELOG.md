@@ -1,6 +1,7 @@
 ## 1.3.5
 
 * Support macos
+* Fixed an issue on ios
 
 ## 1.3.4
 

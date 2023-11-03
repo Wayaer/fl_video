@@ -12,8 +12,8 @@ class PlayerNotifier extends ChangeNotifier {
   set hideStuff(bool value) {
     if (_hideStuff != value) {
       _hideStuff = value;
-      notifyListeners();
     }
+    notifyListeners();
   }
 
   static PlayerNotifier get init => PlayerNotifier._(true);

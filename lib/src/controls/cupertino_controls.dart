@@ -162,37 +162,39 @@ class _CupertinoControlsState extends State<CupertinoControls>
 
     return MouseRegion(
         onHover: (_) => _cancelAndRestartTimer(),
-        child: Universal(
-            isStack: true,
-            onTap: _cancelAndRestartTimer,
-            absorbing: notifier.hideStuff,
-            children: [
-              _buildHitArea(),
-              Universal(
-                  padding: const EdgeInsets.all(12.0),
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    AnimatedOpacity(
-                        opacity: notifier.hideStuff ? 0.0 : 1.0,
-                        duration: const Duration(milliseconds: 300),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _buildFullscreen(),
-                              if (widget.enableVolume) _buildVolume(),
-                            ])),
-                    const Spacer(),
-                    if (_subtitleOn &&
-                        widget.enableSubtitle &&
-                        flVideoController.subtitle != null)
-                      _buildSubtitles(),
-                    if (widget.enableBottomBar)
+        child: GestureDetector(
+          onTap: _cancelAndRestartTimer,
+          child: Universal(
+              isStack: true,
+              absorbing: notifier.hideStuff,
+              children: [
+                _buildHitArea(),
+                Universal(
+                    padding: const EdgeInsets.all(12.0),
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       AnimatedOpacity(
                           opacity: notifier.hideStuff ? 0.0 : 1.0,
                           duration: const Duration(milliseconds: 300),
-                          child: _buildBottomBar())
-                  ])
-            ]));
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _buildFullscreen(),
+                                if (widget.enableVolume) _buildVolume(),
+                              ])),
+                      const Spacer(),
+                      if (_subtitleOn &&
+                          widget.enableSubtitle &&
+                          flVideoController.subtitle != null)
+                        _buildSubtitles(),
+                      if (widget.enableBottomBar)
+                        AnimatedOpacity(
+                            opacity: notifier.hideStuff ? 0.0 : 1.0,
+                            duration: const Duration(milliseconds: 300),
+                            child: _buildBottomBar())
+                    ])
+              ]),
+        ));
   }
 
   @override
@@ -241,32 +243,30 @@ class _CupertinoControlsState extends State<CupertinoControls>
             textAlign: TextAlign.center));
   }
 
-  Widget _buildBottomBar() {
-    return Universal(
-        bottom: flVideoController.isFullScreen,
-        decoration: BoxDecoration(
-            color: widget.backgroundColor,
-            borderRadius: BorderRadius.circular(10)),
-        child: flVideoController.isLive
-            ? Universal(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                direction: Axis.horizontal,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                    _buildPlayPause(),
-                    _buildLive(),
-                  ])
-            : Row(children: <Widget>[
-                if (widget.enableSkip) _buildSkipBack(),
-                if (widget.enablePlay) _buildPlayPause(),
-                if (widget.enableSkip) _buildSkipForward(),
-                if (widget.enablePosition) _buildPosition(),
-                _buildProgressBar(),
-                if (widget.enablePosition) _buildRemaining(),
-                if (widget.enableSubtitle) _buildSubtitleToggle(),
-                if (widget.enableSpeed) _buildSpeed(),
-              ]));
-  }
+  Widget _buildBottomBar() => Universal(
+      bottom: flVideoController.isFullScreen,
+      decoration: BoxDecoration(
+          color: widget.backgroundColor,
+          borderRadius: BorderRadius.circular(10)),
+      child: flVideoController.isLive
+          ? Universal(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              direction: Axis.horizontal,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                  _buildPlayPause(),
+                  _buildLive(),
+                ])
+          : Row(children: <Widget>[
+              if (widget.enableSkip) _buildSkipBack(),
+              if (widget.enablePlay) _buildPlayPause(),
+              if (widget.enableSkip) _buildSkipForward(),
+              if (widget.enablePosition) _buildPosition(),
+              Expanded(child: _buildProgressBar()),
+              if (widget.enablePosition) _buildRemaining(),
+              if (widget.enableSubtitle) _buildSubtitleToggle(),
+              if (widget.enableSpeed) _buildSpeed(),
+            ]));
 
   Widget _buildLive() =>
       Text('LIVE', style: TextStyle(color: widget.color, fontSize: 12.0));
@@ -462,22 +462,21 @@ class _CupertinoControlsState extends State<CupertinoControls>
     setState(() {});
   }
 
-  Widget _buildProgressBar() => Expanded(
-      child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: _CupertinoVideoProgressBar(controller, onDragStart: () {
-            widget.onDragProgress
-                ?.call(FlVideoDragProgressEvent.start, _latestValue.position);
-            _dragging = true;
-            setState(() {});
-            _hideTimer?.cancel();
-          }, onDragEnd: () {
-            widget.onDragProgress
-                ?.call(FlVideoDragProgressEvent.start, _latestValue.position);
-            _dragging = false;
-            setState(() {});
-            _startHideTimer();
-          }, colors: widget.progressColors)));
+  Widget _buildProgressBar() => Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: _CupertinoVideoProgressBar(controller, onDragStart: () {
+        widget.onDragProgress
+            ?.call(FlVideoDragProgressEvent.start, _latestValue.position);
+        _dragging = true;
+        setState(() {});
+        _hideTimer?.cancel();
+      }, onDragEnd: () {
+        widget.onDragProgress
+            ?.call(FlVideoDragProgressEvent.start, _latestValue.position);
+        _dragging = false;
+        setState(() {});
+        _startHideTimer();
+      }, colors: widget.progressColors));
 
   void _playPause() {
     final isFinished = _latestValue.position >= _latestValue.duration;

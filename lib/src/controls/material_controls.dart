@@ -156,28 +156,30 @@ class _MaterialControlsState extends State<MaterialControls>
 
     return MouseRegion(
         onHover: (_) => _cancelAndRestartTimer(),
-        child: Universal(
-            onTap: _cancelAndRestartTimer,
-            absorbing: notifier.hideStuff,
-            isStack: true,
-            children: [
-              _buildHitArea(),
-              Universal(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    if (_subtitleOn &&
-                        widget.enableSubtitle &&
-                        flVideoController.subtitle != null)
-                      _buildSubtitles(),
-                    if (widget.enableBottomBar)
-                      AnimatedOpacity(
-                          opacity: notifier.hideStuff ? 0.0 : 1.0,
-                          duration: const Duration(milliseconds: 300),
-                          child: _buildBottomBar()),
-                  ])
-            ]));
+        child: GestureDetector(
+          onTap: _cancelAndRestartTimer,
+          child: Universal(
+              absorbing: notifier.hideStuff,
+              isStack: true,
+              children: [
+                _buildHitArea(),
+                Universal(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (_subtitleOn &&
+                          widget.enableSubtitle &&
+                          flVideoController.subtitle != null)
+                        _buildSubtitles(),
+                      if (widget.enableBottomBar)
+                        AnimatedOpacity(
+                            opacity: notifier.hideStuff ? 0.0 : 1.0,
+                            duration: const Duration(milliseconds: 300),
+                            child: _buildBottomBar()),
+                    ])
+              ]),
+        ));
   }
 
   @override
@@ -279,7 +281,6 @@ class _MaterialControlsState extends State<MaterialControls>
             builder: (context) => _PlaybackSpeedDialog(
                 speeds: widget.playbackSpeeds,
                 selected: _latestValue.playbackSpeed));
-
         if (chosenSpeed != null) controller.setPlaybackSpeed(chosenSpeed);
         if (_latestValue.isPlaying) _startHideTimer();
       });

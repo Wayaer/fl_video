@@ -40,7 +40,10 @@ class _HomePageState extends State<_HomePage>
           bottom: true,
           child: Column(children: [
             Expanded(
-                child: TabBarView(controller: controller, children: controls)),
+                child: TabBarView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    controller: controller,
+                    children: controls)),
             const SizedBox(height: 40),
             Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
               ElevatedText(
@@ -76,8 +79,7 @@ class _CupertinoControlsVideoPlayerState
   void initState() {
     super.initState();
     _controller = FlVideoPlayerController(
-        videoPlayerController: VideoPlayerController.networkUrl(Uri.parse(
-            'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4')),
+        videoPlayerController: VideoPlayerController.asset('assets/h.mp4'),
         autoPlay: true,
         looping: true,
         overlay: const IgnorePointer(
@@ -158,8 +160,7 @@ class _MaterialControlsVideoPlayerState
   void initState() {
     super.initState();
     _controller = FlVideoPlayerController(
-        videoPlayerController: VideoPlayerController.networkUrl(Uri.parse(
-            'https://assets.mixkit.co/videos/preview/mixkit-daytime-city-traffic-aerial-view-56-large.mp4')),
+        videoPlayerController: VideoPlayerController.asset('assets/v.mp4'),
         autoPlay: true,
         looping: true,
         overlay: const IgnorePointer(
