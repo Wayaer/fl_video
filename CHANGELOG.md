@@ -1,3 +1,7 @@
+## 1.3.5
+
+* Support macos
+
 ## 1.3.4
 
 * Support web
