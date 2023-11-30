@@ -1,3 +1,7 @@
+## 1.3.6
+
+* Update dependency
+
 ## 1.3.5
 
 * Support macos
