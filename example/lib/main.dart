@@ -10,56 +10,73 @@ void main() {
       home: const _HomePage()));
 }
 
-class _HomePage extends StatefulWidget {
+class _HomePage extends StatelessWidget {
   const _HomePage();
 
   @override
-  State<_HomePage> createState() => _HomePageState();
+  Widget build(BuildContext context) {
+    final tabs = ['VideoPlayer', 'Material', 'Cupertino'];
+    return Scaffold(
+        appBar: AppBar(title: const Text('Fl Video Player')),
+        body: DefaultTabController(
+            length: tabs.length,
+            child: Column(children: [
+              TabBar(tabs: tabs.map((e) => Tab(text: e)).toList()),
+              Expanded(
+                  child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: TabBarView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      const _VideoPlayer(),
+                      const _MaterialControlsVideoPlayer(),
+                      const _CupertinoControlsVideoPlayer()
+                    ]),
+              )),
+            ])));
+  }
 }
 
-class _HomePageState extends State<_HomePage>
-    with SingleTickerProviderStateMixin {
-  late TabController controller;
+class _VideoPlayer extends StatefulWidget {
+  const _VideoPlayer();
 
-  final controls = [
-    const _MaterialControlsVideoPlayer(),
-    const _CupertinoControlsVideoPlayer()
-  ];
+  @override
+  State<_VideoPlayer> createState() => _VideoPlayerState();
+}
+
+class _VideoPlayerState extends State<_VideoPlayer> {
+  late VideoPlayerController controller;
 
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 2, vsync: this);
+    controller = VideoPlayerController.networkUrl(Uri.parse(
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'));
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await controller.initialize();
+      await controller.setLooping(true);
+      await controller.play();
+      setState(() {});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text('Fl Video Player')),
-        body: SafeArea(
-          bottom: true,
-          child: Column(children: [
-            Expanded(
-                child: TabBarView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    controller: controller,
-                    children: controls)),
-            const SizedBox(height: 40),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-              ElevatedText(
-                  onPressed: () {
-                    controller.animateTo(0);
-                  },
-                  text: "MaterialControls"),
-              ElevatedText(
-                  onPressed: () {
-                    controller.animateTo(1);
-                  },
-                  text: 'CupertinoControls')
-            ]),
-            const SizedBox(height: 40),
-          ]),
-        ));
+    return Container(
+        alignment: Alignment.center,
+        width: double.infinity,
+        height: double.infinity,
+        child: controller.value.isInitialized
+            ? AspectRatio(
+                aspectRatio: controller.value.aspectRatio,
+                child: VideoPlayer(controller))
+            : CircularProgressIndicator());
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 }
 
@@ -73,12 +90,12 @@ class _CupertinoControlsVideoPlayer extends StatefulWidget {
 
 class _CupertinoControlsVideoPlayerState
     extends State<_CupertinoControlsVideoPlayer> {
-  late FlVideoPlayerController _controller;
+  late FlVideoPlayerController controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = FlVideoPlayerController(
+    controller = FlVideoPlayerController(
         videoPlayerController: VideoPlayerController.asset('assets/h.mp4'),
         autoPlay: true,
         looping: true,
@@ -134,13 +151,13 @@ class _CupertinoControlsVideoPlayerState
 
   @override
   Widget build(BuildContext context) {
-    return FlVideoPlayer(controller: _controller);
+    return FlVideoPlayer(controller: controller);
   }
 
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose();
+    controller.dispose();
   }
 }
 
@@ -154,12 +171,12 @@ class _MaterialControlsVideoPlayer extends StatefulWidget {
 
 class _MaterialControlsVideoPlayerState
     extends State<_MaterialControlsVideoPlayer> {
-  late FlVideoPlayerController _controller;
+  late FlVideoPlayerController controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = FlVideoPlayerController(
+    controller = FlVideoPlayerController(
         videoPlayerController: VideoPlayerController.asset('assets/v.mp4'),
         autoPlay: true,
         looping: true,
@@ -202,23 +219,12 @@ class _MaterialControlsVideoPlayerState
 
   @override
   Widget build(BuildContext context) {
-    return FlVideoPlayer(controller: _controller);
+    return FlVideoPlayer(controller: controller);
   }
 
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose();
+    controller.dispose();
   }
-}
-
-class ElevatedText extends StatelessWidget {
-  const ElevatedText({super.key, this.onPressed, required this.text});
-
-  final VoidCallback? onPressed;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) =>
-      ElevatedButton(onPressed: onPressed, child: Text(text));
 }

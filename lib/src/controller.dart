@@ -2,8 +2,6 @@ import 'package:fl_video/fl_video.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'video_player.dart';
-
 class FlVideoPlayerController extends ChangeNotifier {
   FlVideoPlayerController(
       {required this.videoPlayerController,
