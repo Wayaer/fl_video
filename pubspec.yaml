@@ -12,10 +12,10 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   video_player: ^2.9.1
-  wakelock_plus: ^1.2.7
+  wakelock_plus: ^1.2.8
 
 dev_dependencies:
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true

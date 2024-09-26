@@ -5,5 +5,6 @@ export 'package:wakelock_plus/wakelock_plus.dart';
 
 export 'src/controls/cupertino_controls.dart';
 export 'src/controls/material_controls.dart';
-export 'src/fl_video_player.dart';
+export 'src/video_player.dart';
+export 'src/controller.dart';
 export 'src/model.dart';
