@@ -1,6 +1,11 @@
 ## 1.4.1
 
 * Update dependency
+* Update example
+
+## 1.4.1
+
+* Update dependency
 
 ## 1.3.5
 

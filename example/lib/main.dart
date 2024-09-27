@@ -15,7 +15,7 @@ class _HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tabs = ['VideoPlayer', 'Material', 'Cupertino'];
+    final tabs = ['Material', 'VideoPlayer', 'Cupertino'];
     return Scaffold(
         appBar: AppBar(title: const Text('Fl Video Player')),
         body: DefaultTabController(
@@ -28,8 +28,8 @@ class _HomePage extends StatelessWidget {
                       child: TabBarView(
                           physics: const NeverScrollableScrollPhysics(),
                           children: [
-                            const _VideoPlayer(),
                             const _MaterialControlsVideoPlayer(),
+                            const _VideoPlayer(),
                             const _CupertinoControlsVideoPlayer(),
                           ]))),
             ])));
