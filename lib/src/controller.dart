@@ -120,13 +120,11 @@ class FlVideoPlayerController extends ChangeNotifier {
   bool get isPlaying => videoPlayerController.value.isPlaying;
 
   Future<void> _initialize() async {
-    await videoPlayerController.setLooping(looping);
-
     if ((autoInitialize || autoPlay) &&
         !videoPlayerController.value.isInitialized) {
       await videoPlayerController.initialize();
-      notifyListeners();
     }
+    await videoPlayerController.setLooping(looping);
 
     if (autoPlay) {
       if (fullScreenByDefault) enterFullScreen();

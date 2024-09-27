@@ -24,15 +24,14 @@ class _HomePage extends StatelessWidget {
               TabBar(tabs: tabs.map((e) => Tab(text: e)).toList()),
               Expanded(
                   child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: TabBarView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      const _VideoPlayer(),
-                      const _MaterialControlsVideoPlayer(),
-                      const _CupertinoControlsVideoPlayer()
-                    ]),
-              )),
+                      padding: const EdgeInsets.all(12.0),
+                      child: TabBarView(
+                          physics: const NeverScrollableScrollPhysics(),
+                          children: [
+                            const _VideoPlayer(),
+                            const _MaterialControlsVideoPlayer(),
+                            const _CupertinoControlsVideoPlayer(),
+                          ]))),
             ])));
   }
 }
@@ -50,14 +49,12 @@ class _VideoPlayerState extends State<_VideoPlayer> {
   @override
   void initState() {
     super.initState();
-    controller = VideoPlayerController.networkUrl(Uri.parse(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'));
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await controller.initialize();
-      await controller.setLooping(true);
-      await controller.play();
-      setState(() {});
-    });
+    controller = VideoPlayerController.asset('assets/h.mp4')
+      ..initialize().then((_) {
+        setState(() {});
+      })
+      ..setLooping(true)
+      ..play();
   }
 
   @override
