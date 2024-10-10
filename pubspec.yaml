@@ -5,13 +5,13 @@ repository: https://github.com/Wayaer/fl_video.git
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
-  flutter: '>=3.13.0'
+  flutter: '>=3.24.0'
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  video_player: ^2.9.1
+  video_player: ^2.9.2
   wakelock_plus: ^1.2.8
 
 dev_dependencies:
