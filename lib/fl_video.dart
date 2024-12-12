@@ -1,5 +1,3 @@
-library fl_video;
-
 export 'package:video_player/video_player.dart';
 export 'package:wakelock_plus/wakelock_plus.dart';
 
