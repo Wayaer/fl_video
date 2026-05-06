@@ -1,3 +1,7 @@
+## 1.5.0
+
+* Update version
+
 ## 1.4.1
 
 * Update dependency
