@@ -1,0 +1,34 @@
+# 存在 .pubignore 时 pub 不再读取 .gitignore，因此这里需要重新列出要排除的内容。
+
+# 系统与编辑器
+.DS_Store
+*.log
+.idea/
+*.iml
+.vscode/
+
+# 构建与 pub 产物
+build/
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+*.lock
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# iOS 生成文件
+**/xcuserdata/
+example/ios/Pods/
+example/ios/.symlinks/
+example/ios/Flutter/ephemeral/
+example/ios/Flutter/App.framework
+example/ios/Flutter/Flutter.framework
+example/ios/Flutter/Flutter.podspec
+example/ios/Flutter/Generated.xcconfig
+example/ios/Flutter/flutter_assets/
+example/ios/Flutter/flutter_export_environment.sh
+example/ios/Runner/GeneratedPluginRegistrant.*
+
+# 示例的 Web 预览部署产物（GitHub Pages 托管用，体积大且不属于包内容）
+example/app/

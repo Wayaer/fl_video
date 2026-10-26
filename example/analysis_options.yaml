@@ -1,1 +1,14 @@
+analyzer:
+  exclude:
+    - build/**
+    - ios/**
+    - web/**
 include: package:flutter_lints/flutter.yaml
+
+formatter:
+  page_width: 120
+  trailing_commas: automate
+
+linter:
+  rules:
+    always_use_package_imports: true

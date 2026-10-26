@@ -1,44 +1,15 @@
 import 'package:flutter/widgets.dart';
 
+/// 为任意 Widget 快捷添加点击手势。
 extension ExtensionWidget on Widget {
-  GestureDetector onTap(GestureTapCallback? onTap, {Key? key}) =>
-      GestureDetector(onTap: onTap, key: key, child: this);
+  /// 用 [GestureDetector] 包裹当前 Widget，并监听 [onTap]。
+  GestureDetector onTap(GestureTapCallback? onTap, {Key? key}) => GestureDetector(onTap: onTap, key: key, child: this);
 }
 
-extension ExtensionDuration on Duration {
-  String formatDuration() {
-    final ms = inMilliseconds;
-
-    int seconds = ms ~/ 1000;
-    final int hours = seconds ~/ 3600;
-    seconds = seconds % 3600;
-    final minutes = seconds ~/ 60;
-    seconds = seconds % 60;
-
-    final hoursString = hours >= 10
-        ? '$hours'
-        : hours == 0
-            ? '00'
-            : '0$hours';
-
-    final minutesString = minutes >= 10
-        ? '$minutes'
-        : minutes == 0
-            ? '00'
-            : '0$minutes';
-
-    final secondsString = seconds >= 10
-        ? '$seconds'
-        : seconds == 0
-            ? '00'
-            : '0$seconds';
-
-    final formattedTime =
-        '${hoursString == '00' ? '' : '$hoursString:'}$minutesString:$secondsString';
-    return formattedTime;
-  }
-}
-
+/// 通用布局包装器（内部使用）。
+///
+/// 按固定顺序把内容包装成 Padding、背景、手势、宽高比、AbsorbPointer、
+/// 撑满、对齐和 SafeArea。
 class Universal extends StatelessWidget {
   const Universal({
     super.key,
@@ -64,63 +35,81 @@ class Universal extends StatelessWidget {
     this.alignment,
   });
 
+  /// 单个子组件；与 [children] 同时存在时作为第一个子项。
   final Widget? child;
 
-  /// [DecoratedBox]
+  /// 背景装饰（[DecoratedBox]）。
   final Decoration? decoration;
 
-  /// [Padding]
+  /// 内边距（[Padding]）。
   final EdgeInsetsGeometry? padding;
 
-  /// [GestureDetector]
+  /// 点击回调（[GestureDetector]）。
   final GestureTapCallback? onTap;
+
+  /// 双击回调（[GestureDetector]）。
   final GestureTapCallback? onDoubleTap;
 
-  /// [Flex]
+  /// 子组件列表。
   final List<Widget>? children;
+
+  /// [Flex] 排列方向。
   final Axis direction;
+
+  /// [Flex] 主轴对齐方式。
   final MainAxisAlignment mainAxisAlignment;
+
+  /// [Flex] 交叉轴对齐方式。
   final CrossAxisAlignment crossAxisAlignment;
+
+  /// [Flex] 主轴尺寸策略。
   final MainAxisSize mainAxisSize;
 
-  /// [SafeArea]
+  /// SafeArea 左边距。
   final bool left;
+
+  /// SafeArea 上边距。
   final bool top;
+
+  /// SafeArea 右边距。
   final bool right;
+
+  /// SafeArea 下边距。
   final bool bottom;
 
-  /// [SizedBox.expand()]
+  /// 是否用 [SizedBox.expand] 撑满父级。
   final bool expand;
 
-  /// [Stack]
+  /// 为 true 时使用 [Stack]，否则使用 [Flex]。
   final bool isStack;
 
-  /// [AbsorbPointer]
+  /// 是否用 [AbsorbPointer] 拦截子组件点击。
   final bool? absorbing;
 
-  /// [AspectRatio]
+  /// 宽高比（[AspectRatio]）。
   final double? aspectRatio;
 
-  /// [ColoredBox]
+  /// 背景色（[ColoredBox]）。
   final Color? color;
 
-  /// [Align]
+  /// 对齐方式（[Align]）。
   final Alignment? alignment;
 
   @override
   Widget build(BuildContext context) {
     Widget current = SizedBox(child: child);
     if (children != null) {
-      if (child != null) children!.insert(0, child!);
+      final List<Widget> items = [?child, ...children!];
       if (isStack) {
-        current = Stack(children: children!);
+        current = Stack(children: items);
       } else {
         current = Flex(
-            mainAxisSize: mainAxisSize,
-            mainAxisAlignment: mainAxisAlignment,
-            crossAxisAlignment: crossAxisAlignment,
-            direction: direction,
-            children: children!);
+          mainAxisSize: mainAxisSize,
+          mainAxisAlignment: mainAxisAlignment,
+          crossAxisAlignment: crossAxisAlignment,
+          direction: direction,
+          children: items,
+        );
       }
     }
 
@@ -134,8 +123,7 @@ class Universal extends StatelessWidget {
       current = DecoratedBox(decoration: decoration!, child: current);
     }
     if (onTap != null || onDoubleTap != null) {
-      current = GestureDetector(
-          onTap: onTap, onDoubleTap: onDoubleTap, child: current);
+      current = GestureDetector(onTap: onTap, onDoubleTap: onDoubleTap, child: current);
     }
 
     if (aspectRatio != null) {
@@ -150,8 +138,7 @@ class Universal extends StatelessWidget {
       current = Align(alignment: alignment!, child: current);
     }
     if (left || right || bottom || top) {
-      current = SafeArea(
-          left: left, top: top, right: right, bottom: bottom, child: current);
+      current = SafeArea(left: left, top: top, right: right, bottom: bottom, child: current);
     }
     return current;
   }
